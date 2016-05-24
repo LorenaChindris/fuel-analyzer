@@ -1,4 +1,4 @@
-package com.ibericart.fuelanalyzer;
+package com.ibericart.fuelanalyzer.activity;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -18,19 +18,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ibericart.fuelanalyzer.R;
+import com.ibericart.fuelanalyzer.util.Constants;
+
 import java.util.Set;
 
-public class ListDevicesActivity extends Activity {
+public class DeviceListActivity extends Activity {
 
-    private static final String TAG = "ListDevicesActivity";
-
-    private static final int REQUEST_ENABLE_BLUETOOTH = 1;
-
-    private static final String NEW_LINE = "\n";
-
-    private static final int MAC_ADDRESS_LENGTH = 17;
-
-    static final String EXTRA_DEVICE_ADDRESS = "device_address";
+    private static final String TAG = "DeviceListActivity";
 
     private BluetoothAdapter adapter;
 
@@ -109,7 +104,7 @@ public class ListDevicesActivity extends Activity {
         if (adapter != null && !adapter.isEnabled()) {
             // prompt the user to enable Bluetooth
             Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBluetooth, REQUEST_ENABLE_BLUETOOTH);
+            startActivityForResult(enableBluetooth, Constants.REQUEST_ENABLE_BLUETOOTH);
         }
     }
 
@@ -128,15 +123,13 @@ public class ListDevicesActivity extends Activity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_ENABLE_BLUETOOTH) {
+        if (requestCode == Constants.REQUEST_ENABLE_BLUETOOTH) {
             // when the request to enable Bluetooth returns
             if (resultCode == Activity.RESULT_OK) {
                 // Bluetooth is now enabled
                 Log.d(TAG, "Bluetooth is now enabled");
                 // enable the Scan button
                 scanButton.setEnabled(true);
-
-                addPairedDevices();
             } else {
                 // the user didn't enable Bluetooth or an error occurred
                 Log.d(TAG, "Bluetooth not enabled");
@@ -153,7 +146,7 @@ public class ListDevicesActivity extends Activity {
         if (pairedDevices.size() > 0) {
             findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
             for (BluetoothDevice device : pairedDevices) {
-                pairedDevicesAdapter.add(device.getName() + NEW_LINE + device.getAddress());
+                pairedDevicesAdapter.add(device.getName() + Constants.NEW_LINE + device.getAddress());
             }
         }
         else {
@@ -163,7 +156,7 @@ public class ListDevicesActivity extends Activity {
     }
 
     /**
-     * perform device discovery using the BluetoothAdapter previously acquired
+     * Performs device discovery using the BluetoothAdapter previously acquired.
      */
     private void discoverDevices() {
         Log.d(TAG, "discoverDevices()");
@@ -185,25 +178,25 @@ public class ListDevicesActivity extends Activity {
     }
 
     /**
-     * the BroadcastReceiver which adds the newly discovered devices to the relevant ArrayAdapter
-     * and updates the activity's title once the discovery process is finished
+     * The BroadcastReceiver which adds the newly discovered devices to the relevant ArrayAdapter
+     * and updates the activity's title once the discovery process is finished.
      */
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-
-            // When discovery finds a device
+            // when discovery finds a device
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                // Get the BluetoothDevice object from the Intent
+                // get the BluetoothDevice object from the Intent
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                // If it's already paired, skip it, because it's been listed already
+                // if it's already paired, skip it, because it's been listed already
                 if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
-                    newDevicesAdapter.add(device.getName() + NEW_LINE + device.getAddress());
+                    newDevicesAdapter.add(device.getName() + Constants.NEW_LINE + device.getAddress());
                 }
-                // When discovery is finished, change the Activity title
-            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                // when discovery is finished, change the Activity title
+            }
+            else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 setProgressBarIndeterminateVisibility(false);
                 setTitle(R.string.select_device);
                 if (newDevicesAdapter.getCount() == 0) {
@@ -215,7 +208,7 @@ public class ListDevicesActivity extends Activity {
     };
 
     /**
-     * defines the listener which fires when the user clicks a device
+     * Defines the listener which fires when the user clicks a device.
      */
     private final AdapterView.OnItemClickListener deviceClickListener = new AdapterView.OnItemClickListener() {
 
@@ -232,14 +225,14 @@ public class ListDevicesActivity extends Activity {
             String info = ((TextView) v).getText().toString();
             if (!info.equals(getResources().getText(R.string.none_found).toString())
                     && !info.equals(getResources().getText(R.string.none_paired))) {
-                address = info.substring(info.length() - MAC_ADDRESS_LENGTH);
+                address = info.substring(info.length() - Constants.MAC_ADDRESS_LENGTH);
             }
 
             // if we selected a valid device
             if (address != null) {
                 // create the result Intent and add the MAC address as extra information
                 Intent intent = new Intent();
-                intent.putExtra(EXTRA_DEVICE_ADDRESS, address);
+                intent.putExtra(Constants.EXTRA_DEVICE_ADDRESS, address);
 
                 // set result as OK, passing the new intent and finish this activity
                 setResult(Activity.RESULT_OK, intent);

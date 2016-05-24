@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+    >
 
     <TextView
         android:id="@+id/title_paired_devices"
@@ -21,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:stackFromBottom="false"
+        android:stackFromBottom="true"
         />
 
     <TextView
@@ -30,7 +31,7 @@
         android:layout_height="wrap_content"
         android:background="#666"
         android:paddingLeft="5dp"
-        android:text="@string/title_new_devices"
+        android:text="@string/title_other_devices"
         android:textColor="#fff"
         android:visibility="gone"
         />
@@ -40,7 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="2"
-        android:stackFromBottom="false"
+        android:stackFromBottom="true"
         />
 
     <Button
@@ -49,5 +50,4 @@
         android:layout_height="wrap_content"
         android:text="@string/button_scan"
         />
-
 </LinearLayout>
