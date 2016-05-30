@@ -17,6 +17,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    // workaround to Error:Execution failed for task ':app:compileDebugAndroidTestJavaWithJavac'
+    // as suggested here: https://code.google.com/p/android/issues/detail?id=199542
+    compileOptions.incremental = false
 }
 
 dependencies {
@@ -24,4 +28,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support:support-v4:23.4.0'
+    compile 'com.github.pires:obd-java-api:1.0-RC16'
+    compile 'org.roboguice:roboguice:3.+'
+    provided 'org.roboguice:roboblender:3.+'
 }

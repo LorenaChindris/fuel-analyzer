@@ -1,29 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ibericart.fuelanalyzer">
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.ibericart.fuelanalyzer"
+    android:versionCode="13"
+    android:versionName="2.0-RC2">
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+    <uses-permission android:name="android.permission.READ_LOGS" />
 
     <application
-        android:allowBackup="false"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name" >
+        android:allowBackup="true"
+        android:icon="@drawable/ic_btcar"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
         <activity
-            android:name=".activity.MainActivity"
-            android:configChanges="orientation|keyboardHidden"
+            android:name="com.ibericart.fuelanalyzer.activity.MainActivity"
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleInstance"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.DeviceListActivity"
-            android:configChanges="orientation|keyboardHidden"
-            android:label="@string/select_device" />
+            android:name="com.ibericart.fuelanalyzer.activity.ConfigActivity"
+            android:launchMode="singleInstance"
+            android:label="@string/app_name"></activity>
+
+        <activity
+            android:name="com.ibericart.fuelanalyzer.activity.TripListActivity"
+            android:launchMode="singleInstance"
+            android:label="@string/title_activity_trips_list"></activity>
+
+        <service
+            android:name="com.ibericart.fuelanalyzer.io.ObdGatewayService"
+            android:launchMode="singleInstance"
+            android:exported="false" />
+        <service
+            android:name="com.ibericart.fuelanalyzer.io.MockObdGatewayService"
+            android:launchMode="singleInstance"
+            android:exported="false" />
     </application>
 
 </manifest>
