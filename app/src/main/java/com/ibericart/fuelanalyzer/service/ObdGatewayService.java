@@ -1,4 +1,4 @@
-package com.ibericart.fuelanalyzer.io;
+package com.ibericart.fuelanalyzer.service;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -23,6 +23,8 @@ import com.github.pires.obd.exceptions.UnsupportedCommandException;
 import com.ibericart.fuelanalyzer.R;
 import com.ibericart.fuelanalyzer.activity.ConfigActivity;
 import com.ibericart.fuelanalyzer.activity.MainActivity;
+import com.ibericart.fuelanalyzer.io.BluetoothManager;
+import com.ibericart.fuelanalyzer.io.ObdCommandJob;
 import com.ibericart.fuelanalyzer.io.ObdCommandJob.ObdCommandJobState;
 import com.google.inject.Inject;
 
@@ -31,41 +33,52 @@ import java.io.IOException;
 
 /**
  * This service is primarily responsible for establishing and maintaining a
- * permanent connection between the device where the application runs and a more
- * OBD Bluetooth interface.
- * <p/>
+ * permanent connection between the device where the application runs and
+ * an OBD Bluetooth interface.
+ * <p />
  * Secondarily, it will serve as a repository of ObdCommandJobs and at the same
  * time the application state-machine.
+ * <br />
+ * Uses code from https://github.com/pires/android-obd-reader
  */
 public class ObdGatewayService extends AbstractGatewayService {
 
     private static final String TAG = ObdGatewayService.class.getName();
-    @Inject
-    SharedPreferences prefs;
 
-    private BluetoothDevice dev = null;
-    private BluetoothSocket sock = null;
+    private static final String EMPTY_STRING = "";
+    private static final int OBD_COMMAND_TIMEOUT = 62;
+    private static final String DEFAULT_OBD_PROTOCOL = "AUTO";
+    private static final String EMAIL_CONTENT_TYPE = "text/plain";
+    private static final String DEVELOPER_EMAIL_SUBJECT = "Fuel Analyzer - OBD Reader Debug Logs";
+    private static final String FUEL_ANALYZER_LOGCAT = "FuelAnalyzer_logcat_";
+    private static final String FUEL_ANALYZER_LOGCAT_EXTENSION = ".txt";
+    private static final String LOGS_DIRECTORY = "FuelAnalyzerLogs";
+    private static final String PICK_AN_EMAIL_PROVIDER = "Pick an Email provider";
+    private static final String LOGCAT_COMMAND = "logcat -f ";
+
+    @Inject
+    SharedPreferences preferences;
+
+    private BluetoothDevice device = null;
+    private BluetoothSocket socket = null;
 
     public void startService() throws IOException {
-        Log.d(TAG, "Starting service..");
+        Log.d(TAG, "Starting service");
 
         // get the remote Bluetooth device
-        final String remoteDevice = prefs.getString(ConfigActivity.BLUETOOTH_LIST_KEY, null);
-        if (remoteDevice == null || "".equals(remoteDevice)) {
-            Toast.makeText(ctx, getString(R.string.text_bluetooth_nodevice), Toast.LENGTH_LONG).show();
-
+        final String remoteDevice = preferences.getString(ConfigActivity.BLUETOOTH_LIST_KEY, null);
+        if (remoteDevice == null || EMPTY_STRING.equals(remoteDevice)) {
+            Toast.makeText(context, getString(R.string.text_bluetooth_nodevice),
+                    Toast.LENGTH_LONG).show();
             // log error
-            Log.e(TAG, "No Bluetooth device has been selected.");
-
+            Log.e(TAG, "No Bluetooth device has been selected");
             // TODO kill this service gracefully
             stopService();
             throw new IOException();
         }
         else {
-
-            final BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
-            dev = btAdapter.getRemoteDevice(remoteDevice);
-
+            final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            device = bluetoothAdapter.getRemoteDevice(remoteDevice);
 
             /*
              * Establish Bluetooth connection
@@ -81,22 +94,23 @@ public class ObdGatewayService extends AbstractGatewayService {
              * http://developer.android.com/reference/android/bluetooth/BluetoothAdapter
              * .html#cancelDiscovery()
              */
-            Log.d(TAG, "Stopping Bluetooth discovery.");
-            btAdapter.cancelDiscovery();
+            Log.d(TAG, "Stopping Bluetooth discovery");
+            bluetoothAdapter.cancelDiscovery();
 
-            showNotification(getString(R.string.notification_action), getString(R.string.service_starting), R.drawable.ic_btcar, true, true, false);
+            showNotification(getString(R.string.notification_action), getString(R.string.service_starting),
+                    R.drawable.ic_btcar, true, true, false);
 
             try {
                 startObdConnection();
             }
             catch (Exception e) {
-                Log.e(TAG, "There was an error while establishing connection. -> " + e.getMessage());
-
-                // in case of failure, stop this service.
+                Log.e(TAG, "There was an error while establishing connection", e);
+                // in case of failure stop the service
                 stopService();
                 throw new IOException();
             }
-            showNotification(getString(R.string.notification_action), getString(R.string.service_started), R.drawable.ic_btcar, true, true, false);
+            showNotification(getString(R.string.notification_action), getString(R.string.service_started),
+                    R.drawable.ic_btcar, true, true, false);
         }
     }
 
@@ -108,111 +122,118 @@ public class ObdGatewayService extends AbstractGatewayService {
      * @throws IOException
      */
     private void startObdConnection() throws IOException {
-        Log.d(TAG, "Starting OBD connection..");
+        Log.d(TAG, "Starting OBD connection");
         isRunning = true;
         try {
-            sock = BluetoothManager.connect(dev);
+            socket = BluetoothManager.connect(device);
         }
-        catch (Exception e2) {
-            Log.e(TAG, "There was an error while establishing Bluetooth connection. Stopping app..", e2);
+        catch (Exception e) {
+            Log.e(TAG, "There was an error while establishing Bluetooth connection. Stopping app", e);
             stopService();
             throw new IOException();
         }
 
         // configure the connection
-        Log.d(TAG, "Queueing jobs for connection configuration..");
+        Log.d(TAG, "Queueing jobs for connection configuration");
         queueJob(new ObdCommandJob(new ObdResetCommand()));
         
-        // below is to give the adapter enough time to reset before sending the commands,
+        // give the adapter enough time to reset before sending the commands
         // otherwise the first startup commands could be ignored
-        try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
+        try {
+            Thread.sleep(500);
+        }
+        catch (InterruptedException e) {
+            Log.e(TAG, "Failed to pause the thread", e);
+        }
         
         queueJob(new ObdCommandJob(new EchoOffCommand()));
 
-        // Will send second-time based on tests
+        // will send second-time based on tests
         // TODO this can be done without having to queue jobs by just issuing
-        // command.run(), command.getResult() and validate the result.
+        // TODO command.run(), command.getResult() and validate the result
         queueJob(new ObdCommandJob(new EchoOffCommand()));
+
         queueJob(new ObdCommandJob(new LineFeedOffCommand()));
-        queueJob(new ObdCommandJob(new TimeoutCommand(62)));
+        queueJob(new ObdCommandJob(new TimeoutCommand(OBD_COMMAND_TIMEOUT)));
 
         // get protocol from preferences
-        final String protocol = prefs.getString(ConfigActivity.PROTOCOLS_LIST_KEY, "AUTO");
+        final String protocol = preferences.getString(ConfigActivity.PROTOCOLS_LIST_KEY, DEFAULT_OBD_PROTOCOL);
         queueJob(new ObdCommandJob(new SelectProtocolCommand(ObdProtocols.valueOf(protocol))));
 
         // job for returning dummy data
         queueJob(new ObdCommandJob(new AmbientAirTemperatureCommand()));
 
         queueCounter = 0L;
-        Log.d(TAG, "Initialization jobs queued.");
+        Log.d(TAG, "Initialization jobs queued");
     }
 
     /**
-     * This method will add a job to the queue while setting its ID to the
+     * This method will add a job to the queue while setting its id to the
      * internal queue counter.
      *
      * @param job the job to queue.
      */
     @Override
     public void queueJob(ObdCommandJob job) {
-        // this is a good place to enforce the imperial units option
-        job.getCommand().useImperialUnits(prefs.getBoolean(ConfigActivity.IMPERIAL_UNITS_KEY, false));
-
-        // now we can pass it along
+        // enforce the imperial units option
+        job.getCommand().useImperialUnits(preferences.getBoolean(ConfigActivity.IMPERIAL_UNITS_KEY, false));
+        // queue the job
         super.queueJob(job);
     }
 
     /**
-     * Runs the queue until the service is stopped
+     * Runs the queue until the service is stopped.
      */
     protected void executeQueue() throws InterruptedException {
-        Log.d(TAG, "Executing queue..");
+        Log.d(TAG, "Executing queue");
         while (!Thread.currentThread().isInterrupted()) {
             ObdCommandJob job = null;
             try {
+                // take the next job from the queue
                 job = jobsQueue.take();
 
-                // log job
-                Log.d(TAG, "Taking job[" + job.getId() + "] from queue..");
+                // display information about the job in the log
+                Log.d(TAG, "Taking job [" + job.getId() + "] from the queue");
 
                 if (job.getState().equals(ObdCommandJobState.NEW)) {
-                    Log.d(TAG, "Job state is NEW. Run it..");
+                    Log.d(TAG, "Job is in state NEW; run it");
                     job.setState(ObdCommandJobState.RUNNING);
-                    if (sock.isConnected()) {
-                        job.getCommand().run(sock.getInputStream(), sock.getOutputStream());
+                    if (socket.isConnected()) {
+                        job.getCommand().run(socket.getInputStream(), socket.getOutputStream());
                     }
                     else {
                         job.setState(ObdCommandJobState.EXECUTION_ERROR);
-                        Log.e(TAG, "Can't run command on a closed socket.");
+                        Log.e(TAG, "The command cannot be run on a closed socket");
                     }
                 }
-                else
-                    // log not new job
-                    Log.e(TAG, "Job state was not new, so it shouldn't be in queue. BUG ALERT!");
+                else {
+                    // log that the job wasn't in state NEW
+                    Log.e(TAG, "The job wasn't in state NEW; it shouldn't be in the queue");
+                }
             }
-            catch (InterruptedException i) {
+            catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
-            catch (UnsupportedCommandException u) {
+            catch (UnsupportedCommandException e) {
                 if (job != null) {
                     job.setState(ObdCommandJobState.NOT_SUPPORTED);
                 }
-                Log.d(TAG, "Command not supported. -> " + u.getMessage());
+                Log.d(TAG, "Command not supported", e);
             }
             catch (Exception e) {
                 if (job != null) {
                     job.setState(ObdCommandJobState.EXECUTION_ERROR);
                 }
-                Log.e(TAG, "Failed to run command. -> " + e.getMessage());
+                Log.e(TAG, "Failed to run the command", e);
             }
 
             if (job != null) {
                 final ObdCommandJob job2 = job;
-                ((MainActivity) ctx).runOnUiThread(new Runnable() {
+                ((MainActivity) context).runOnUiThread(new Runnable() {
 
                     @Override
                     public void run() {
-                        ((MainActivity) ctx).stateUpdate(job2);
+                        ((MainActivity) context).stateUpdate(job2);
                     }
                 });
             }
@@ -220,23 +241,23 @@ public class ObdGatewayService extends AbstractGatewayService {
     }
 
     /**
-     * Stop OBD connection and queue processing.
+     * Stops the OBD connection and queue processing.
      */
     public void stopService() {
         Log.d(TAG, "Stopping service");
         notificationManager.cancel(NOTIFICATION_ID);
         jobsQueue.clear();
         isRunning = false;
-
-        if (sock != null) {
-            // close socket
+        if (socket != null) {
+            // close the socket
             try {
-                sock.close();
-            } catch (IOException e) {
+                socket.close();
+            }
+            catch (IOException e) {
                 Log.e(TAG, e.getMessage());
             }
         }
-        // kill service
+        // kill the service
         stopSelf();
     }
 
@@ -244,12 +265,12 @@ public class ObdGatewayService extends AbstractGatewayService {
         return isRunning;
     }
 
-    public static void saveLogcatToFile(Context context, String devemail) {
+    public static void saveLogcatToFile(Context context, String developerEmail) {
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
         emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        emailIntent.setType("text/plain");
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{devemail});
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "OBD2 Reader Debug Logs");
+        emailIntent.setType(EMAIL_CONTENT_TYPE);
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{developerEmail});
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, DEVELOPER_EMAIL_SUBJECT);
 
         StringBuilder sb = new StringBuilder();
         sb.append("\nManufacturer: ").append(Build.MANUFACTURER);
@@ -258,25 +279,25 @@ public class ObdGatewayService extends AbstractGatewayService {
 
         emailIntent.putExtra(Intent.EXTRA_TEXT, sb.toString());
 
-        String fileName = "OBDReader_logcat_" + System.currentTimeMillis() + ".txt";
+        String fileName = FUEL_ANALYZER_LOGCAT + System.currentTimeMillis() + FUEL_ANALYZER_LOGCAT_EXTENSION;
         File sdCard = Environment.getExternalStorageDirectory();
-        File dir = new File(sdCard.getAbsolutePath() + File.separator + "OBD2Logs");
-        if (dir.mkdirs()) {
-            File outputFile = new File(dir, fileName);
+        File directory = new File(sdCard.getAbsolutePath() + File.separator + LOGS_DIRECTORY);
+        if (directory.mkdirs()) {
+            File outputFile = new File(directory, fileName);
             Uri uri = Uri.fromFile(outputFile);
             emailIntent.putExtra(Intent.EXTRA_STREAM, uri);
 
-            Log.d("savingFile", "Going to save logcat to " + outputFile);
+            Log.d(TAG, "Saving logcat to " + outputFile);
             // emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(Intent.createChooser(emailIntent, "Pick an Email provider")
+            context.startActivity(Intent.createChooser(emailIntent, PICK_AN_EMAIL_PROVIDER)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 
             try {
                 @SuppressWarnings("unused")
-                Process process = Runtime.getRuntime().exec("logcat -f " + outputFile.getAbsolutePath());
+                Process process = Runtime.getRuntime().exec(LOGCAT_COMMAND + outputFile.getAbsolutePath());
             }
             catch (IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, "Error while saving logcat", e);
             }
         }
     }

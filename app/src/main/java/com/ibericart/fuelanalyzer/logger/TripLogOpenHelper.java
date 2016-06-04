@@ -1,4 +1,4 @@
-package com.ibericart.fuelanalyzer.trips;
+package com.ibericart.fuelanalyzer.logger;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -21,7 +21,6 @@ public class TripLogOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
     }
 
     private void execSQL(SQLiteDatabase db, String[] statements) {

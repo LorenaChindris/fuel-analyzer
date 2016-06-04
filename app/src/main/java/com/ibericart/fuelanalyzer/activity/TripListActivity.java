@@ -10,9 +10,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.ibericart.fuelanalyzer.R;
-import com.ibericart.fuelanalyzer.trips.TripListAdapter;
-import com.ibericart.fuelanalyzer.trips.TripLog;
-import com.ibericart.fuelanalyzer.trips.TripRecord;
+import com.ibericart.fuelanalyzer.logger.TripLog;
+import com.ibericart.fuelanalyzer.model.TripRecord;
 
 import java.util.List;
 
@@ -22,6 +21,7 @@ import static com.ibericart.fuelanalyzer.activity.ConfirmDialog.createDialog;
 
 /**
  * Activity which displays the list of trips.
+ * <br />
  * Uses code from https://github.com/pires/android-obd-reader
  * and https://github.com/wdkapps/FillUp
  */
@@ -92,7 +92,7 @@ public class TripListActivity extends RoboActivity implements ConfirmDialog.List
         TripRecord record = tripRecords.get(selectedRow);
 
         // attempt to remove the record from the log
-        if (tripLog.deleteTrip(record.getID())) {
+        if (tripLog.deleteTrip(record.getId())) {
 
             // remove the record from our list of tripRecords
             tripRecords.remove(selectedRow);
@@ -136,7 +136,7 @@ public class TripListActivity extends RoboActivity implements ConfirmDialog.List
         // get the record to delete from our list of tripRecords
         TripRecord record = tripRecords.get(selectedRow);
         // attempt to remove the record from the log
-        if (tripLog.deleteTrip(record.getID())) {
+        if (tripLog.deleteTrip(record.getId())) {
             tripRecords.remove(selectedRow);
             tripListAdapter.notifyDataSetChanged();
         }

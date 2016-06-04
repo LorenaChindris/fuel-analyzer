@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ibericart.fuelanalyzer"
-    android:versionCode="13"
-    android:versionName="2.0-RC2">
+    package="com.ibericart.fuelanalyzer">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
@@ -20,6 +18,7 @@
         android:icon="@drawable/ic_btcar"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
+
         <activity
             android:name=".activity.MainActivity"
             android:configChanges="orientation|screenSize"
@@ -31,24 +30,27 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.ibericart.fuelanalyzer.activity.ConfigActivity"
-            android:launchMode="singleInstance"
-            android:label="@string/app_name"></activity>
 
         <activity
-            android:name="com.ibericart.fuelanalyzer.activity.TripListActivity"
+            android:name=".activity.ConfigActivity"
             android:launchMode="singleInstance"
-            android:label="@string/title_activity_trips_list"></activity>
+            android:label="@string/app_name" />
+
+        <activity
+            android:name=".activity.TripListActivity"
+            android:launchMode="singleInstance"
+            android:label="@string/title_activity_trips_list" />
 
         <service
-            android:name="com.ibericart.fuelanalyzer.io.ObdGatewayService"
+            android:name=".service.ObdGatewayService"
             android:launchMode="singleInstance"
             android:exported="false" />
+
         <service
-            android:name="com.ibericart.fuelanalyzer.io.MockObdGatewayService"
+            android:name=".service.MockObdGatewayService"
             android:launchMode="singleInstance"
             android:exported="false" />
+
     </application>
 
 </manifest>

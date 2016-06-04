@@ -1,10 +1,16 @@
-package com.ibericart.fuelanalyzer.trips;
+package com.ibericart.fuelanalyzer.model;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * Used for holding trip information such as start and end date, speed, rpm and runtime.
+ */
 public class TripRecord {
+
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
+    private static final String ZERO_TIMER = "00:00:00";
 
     // record id for database use (primary key)
     private Integer id;
@@ -15,14 +21,44 @@ public class TripRecord {
     // the date the trip ended
     private Date endDate;
 
-    private Integer engineRpmMax = 0;
-
     private Integer speed = 0;
 
+    private Integer engineRpmMax = 0;
+
+    // the amount of time this trip took
     private String engineRuntime;
 
     public TripRecord() {
         startDate = new Date();
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public String getStartDateFormatted() {
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT, Locale.US);
+        return sdf.format(this.startDate);
+    }
+
+    public void setStartDate(Date date) {
+        this.startDate = date;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date date) {
+        this.endDate = date;
     }
 
     public Integer getSpeedMax() {
@@ -36,30 +72,6 @@ public class TripRecord {
 
     public void setSpeedMax(String value) {
         setSpeedMax(Integer.parseInt(value));
-    }
-
-    public Integer getID() {
-        return id;
-    }
-
-    public void setID(Integer id) {
-        this.id = id;
-    }
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date date) {
-        this.startDate = date;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date date) {
-        this.endDate = date;
     }
 
     public Integer getEngineRpmMax() {
@@ -76,19 +88,12 @@ public class TripRecord {
         setEngineRpmMax(Integer.parseInt(value));
     }
 
-    public String getStartDateString() {
-        //todo
-        //return dateFormatter.format(this.startDate);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
-        return sdf.format(this.startDate);
-    }
-
     public String getEngineRuntime() {
         return engineRuntime;
     }
 
     public void setEngineRuntime(String value) {
-        if (!value.equals("00:00:00")) {
+        if (!value.equals(ZERO_TIMER)) {
             this.engineRuntime = value;
         }
     }

@@ -1,4 +1,4 @@
-package com.ibericart.fuelanalyzer.io;
+package com.ibericart.fuelanalyzer.service;
 
 import android.util.Log;
 
@@ -10,78 +10,81 @@ import com.github.pires.obd.commands.protocol.TimeoutCommand;
 import com.github.pires.obd.commands.temperature.AmbientAirTemperatureCommand;
 import com.github.pires.obd.enums.ObdProtocols;
 import com.ibericart.fuelanalyzer.activity.MainActivity;
+import com.ibericart.fuelanalyzer.io.ObdCommandJob;
 import com.ibericart.fuelanalyzer.io.ObdCommandJob.ObdCommandJobState;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 /**
- * This service is primarily responsible for establishing and maintaining a
- * permanent connection between the device where the application runs and a more
- * OBD Bluetooth interface.
- * <p/>
- * Secondarily, it will serve as a repository of ObdCommandJobs and at the same
+ * This service is a mocked version of {@link com.ibericart.fuelanalyzer.service.ObdGatewayService}.
+ * <p />
+ * It will serve as a repository of ObdCommandJobs and at the same
  * time the application state-machine.
+ * <br />
+ * Uses code from https://github.com/pires/android-obd-reader
  */
 public class MockObdGatewayService extends AbstractGatewayService {
 
     private static final String TAG = MockObdGatewayService.class.getName();
+    public static final int OBD_COMMAND_TIMEOUT = 62;
+    public static final String MOCKED_DATA = "41 00 00 00>41 00 00 00>41 00 00 00>";
 
     public void startService() {
-        Log.d(TAG, "Starting " + this.getClass().getName() + " service..");
+        Log.d(TAG, "Starting the mocked service");
 
-        // Let's configure the connection.
-        Log.d(TAG, "Queing jobs for connection configuration..");
+        // configure the connection
+        Log.d(TAG, "Queueing jobs for connection configuration");
         queueJob(new ObdCommandJob(new ObdResetCommand()));
         queueJob(new ObdCommandJob(new EchoOffCommand()));
 
-    /*
-     * Will send second-time based on tests.
-     *
-     * TODO this can be done w/o having to queue jobs by just issuing
-     * command.run(), command.getResult() and validate the result.
-     */
+        // will send second-time based on tests
+        // TODO this can be done without having to queue jobs by just issuing
+        // TODO command.run(), command.getResult() and validate the result
         queueJob(new ObdCommandJob(new EchoOffCommand()));
-        queueJob(new ObdCommandJob(new LineFeedOffCommand()));
-        queueJob(new ObdCommandJob(new TimeoutCommand(62)));
 
-        // For now set protocol to AUTO
+        queueJob(new ObdCommandJob(new LineFeedOffCommand()));
+        queueJob(new ObdCommandJob(new TimeoutCommand(OBD_COMMAND_TIMEOUT)));
+
+        // set the OBD protocol to AUTO
         queueJob(new ObdCommandJob(new SelectProtocolCommand(ObdProtocols.AUTO)));
 
-        // Job for returning dummy data
+        // job for returning dummy data
         queueJob(new ObdCommandJob(new AmbientAirTemperatureCommand()));
 
         queueCounter = 0L;
-        Log.d(TAG, "Initialization jobs queued.");
+        Log.d(TAG, "Initialization jobs queued");
 
         isRunning = true;
     }
 
-
     /**
-     * Runs the queue until the service is stopped
+     * Runs the queue until the service is stopped.
      */
     protected void executeQueue() {
-        Log.d(TAG, "Executing queue..");
+        Log.d(TAG, "Executing queue");
         while (!Thread.currentThread().isInterrupted()) {
             ObdCommandJob job = null;
             try {
                 job = jobsQueue.take();
-
-                Log.d(TAG, "Taking job[" + job.getId() + "] from queue..");
-
+                Log.d(TAG, "Taking job [" + job.getId() + "] from the queue");
                 if (job.getState().equals(ObdCommandJobState.NEW)) {
-                    Log.d(TAG, "Job state is NEW. Run it..");
+                    Log.d(TAG, "Job is in state NEW; run it");
                     job.setState(ObdCommandJobState.RUNNING);
                     Log.d(TAG, job.getCommand().getName());
-                    job.getCommand().run(new ByteArrayInputStream("41 00 00 00>41 00 00 00>41 00 00 00>".getBytes()), new ByteArrayOutputStream());
-                } else {
-                    Log.e(TAG, "Job state was not new, so it shouldn't be in queue. BUG ALERT!");
+                    job.getCommand().run(new ByteArrayInputStream(MOCKED_DATA.getBytes()),
+                            new ByteArrayOutputStream());
                 }
-            } catch (InterruptedException i) {
+                else {
+                    // log that the job wasn't in state NEW
+                    Log.e(TAG, "Job state wasn't in state NEW; it shouldn't be in queue");
+                }
+            }
+            catch (InterruptedException i) {
                 Thread.currentThread().interrupt();
-            } catch (Exception e) {
-                e.printStackTrace();
+            }
+            catch (Exception e) {
+                Log.e(TAG, "Error while executing the commands", e);
                 if (job != null) {
                     job.setState(ObdCommandJobState.EXECUTION_ERROR);
                 }
@@ -89,33 +92,29 @@ public class MockObdGatewayService extends AbstractGatewayService {
             }
 
             if (job != null) {
-                Log.d(TAG, "Job is finished.");
+                Log.d(TAG, "Job finished");
                 job.setState(ObdCommandJobState.FINISHED);
                 final ObdCommandJob job2 = job;
-                ((MainActivity) ctx).runOnUiThread(new Runnable() {
+                ((MainActivity) context).runOnUiThread(new Runnable() {
+
                     @Override
                     public void run() {
-                        ((MainActivity) ctx).stateUpdate(job2);
+                        ((MainActivity) context).stateUpdate(job2);
                     }
                 });
-
             }
         }
     }
 
-
     /**
-     * Stop OBD connection and queue processing.
+     * Stops the queue processing.
      */
     public void stopService() {
-        Log.d(TAG, "Stopping service..");
-
+        Log.d(TAG, "Stopping service");
         notificationManager.cancel(NOTIFICATION_ID);
         jobsQueue.clear();
         isRunning = false;
-
-        // kill service
+        // kill the service
         stopSelf();
     }
-
 }

@@ -1,9 +1,9 @@
-package com.ibericart.fuelanalyzer.io;
+package com.ibericart.fuelanalyzer.logger;
 
 import android.os.Environment;
 import android.util.Log;
 
-import com.ibericart.fuelanalyzer.net.ObdReading;
+import com.ibericart.fuelanalyzer.model.ObdReading;
 
 import java.io.BufferedWriter;
 import java.io.File;

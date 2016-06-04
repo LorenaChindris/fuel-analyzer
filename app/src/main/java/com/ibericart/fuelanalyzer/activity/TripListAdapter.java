@@ -1,4 +1,4 @@
-package com.ibericart.fuelanalyzer.trips;
+package com.ibericart.fuelanalyzer.activity;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
@@ -8,22 +8,24 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.ibericart.fuelanalyzer.R;
+import com.ibericart.fuelanalyzer.model.TripRecord;
 
 import java.util.Date;
 import java.util.List;
 
 public class TripListAdapter extends ArrayAdapter<TripRecord> {
-    /// the Android Activity owning the ListView
+
+    // the Android Activity owning the ListView
     private final Activity activity;
 
-    /// a list of trip records for display
+    // a list of trip records to be displayed
     private final List<TripRecord> records;
 
     /**
      * Constructs an instance of TripListAdapter.
      *
      * @param activity - the Android Activity instance that owns the ListView.
-     * @param records  - the List of TripRecord instances for display in the ListView.
+     * @param records  - the List of TripRecord instances to be displayed in the ListView.
      */
     public TripListAdapter(Activity activity, List<TripRecord> records) {
         super(activity, R.layout.row_trip_list, records);
@@ -32,8 +34,8 @@ public class TripListAdapter extends ArrayAdapter<TripRecord> {
     }
 
     /**
-     * Constructs and populates a View for display of the TripRecord at the index
-     * of the List specified by the position parameter.
+     * Constructs and populates a View of the TripRecord.
+     * The position parameter specifies the index in the List.
      *
      * @see android.widget.ArrayAdapter#getView(int, android.view.View, android.view.ViewGroup)
      */
@@ -56,7 +58,7 @@ public class TripListAdapter extends ArrayAdapter<TripRecord> {
         TripRecord record = records.get(position);
 
         // date
-        startDate.setText(record.getStartDateString());
+        startDate.setText(record.getStartDateFormatted());
         columnDuration.setText(calcDiffTime(record.getStartDate(), record.getEndDate()));
 
         String rpmMax = String.valueOf(record.getEngineRpmMax());
@@ -77,33 +79,29 @@ public class TripListAdapter extends ArrayAdapter<TripRecord> {
         long diffHours = diff / (60 * 60 * 1000) % 24;
         long diffDays = diff / (24 * 60 * 60 * 1000);
 
-        StringBuffer res = new StringBuffer();
-
-        if (diffDays > 0)
-            res.append(diffDays + "d");
-
+        StringBuffer result = new StringBuffer();
+        if (diffDays > 0) {
+            result.append(diffDays + "d");
+        }
         if (diffHours > 0) {
-            if (res.length() > 0) {
-                res.append(" ");
+            if (result.length() > 0) {
+                result.append(" ");
             }
-            res.append(diffHours + "h");
+            result.append(diffHours + "h");
         }
-
         if (diffMinutes > 0) {
-            if (res.length() > 0) {
-                res.append(" ");
+            if (result.length() > 0) {
+                result.append(" ");
             }
-            res.append(diffMinutes + "m");
+            result.append(diffMinutes + "m");
         }
-
         if (diffSeconds > 0) {
-            if (res.length() > 0) {
-                res.append(" ");
+            if (result.length() > 0) {
+                result.append(" ");
             }
-
-            res.append(diffSeconds + "s");
+            result.append(diffSeconds + "s");
         }
-        return res.toString();
+        return result.toString();
     }
 
     /**
@@ -113,11 +111,8 @@ public class TripListAdapter extends ArrayAdapter<TripRecord> {
      */
     @Override
     public void notifyDataSetChanged() {
-
-        // configuration may have changed - get current settings
-        //todo
+        // TODO configuration may have changed - get current settings
         //getSettings();
-
         super.notifyDataSetChanged();
     }
 }

@@ -1,4 +1,4 @@
-package com.ibericart.fuelanalyzer.net;
+package com.ibericart.fuelanalyzer.model;
 
 import java.util.HashMap;
 import java.util.Map;
