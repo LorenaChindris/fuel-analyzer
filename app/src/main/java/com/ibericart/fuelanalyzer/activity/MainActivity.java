@@ -63,6 +63,8 @@ import com.ibericart.fuelanalyzer.util.PositionUtil;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -117,6 +119,9 @@ public class MainActivity extends RoboActivity
 
     private static final String KEY_VALUE_SEPARATOR = ": ";
 
+    private static final int KILOMETER = 1000;
+    private static final String DECIMAL_FORMAT_PATTERN = "#.00";
+
     static {
         RoboGuice.setUseAnnotationDatabases(false);
     }
@@ -132,12 +137,22 @@ public class MainActivity extends RoboActivity
     private LocationManager locationManager;
     private LocationProvider locationProvider;
     private CsvLogWriter csvLogWriter;
+
     private Location lastLocation;
+    private Location previousLocation;
+
+    // distance traveled in this trip
+    // measured in meters
+    private double totalTraveled;
+
     private TripLog tripLog;
     private TripRecord currentTrip;
 
     @InjectView(R.id.compass_text)
     private TextView compass;
+
+    @InjectView(R.id.distance_text)
+    private TextView distance;
 
     @InjectView(R.id.BT_STATUS)
     private TextView bluetoothStatusTextView;
@@ -315,7 +330,7 @@ public class MainActivity extends RoboActivity
         if (locationManager != null) {
             locationProvider = locationManager.getProvider(LocationManager.GPS_PROVIDER);
             if (locationProvider != null) {
-                if (!checkLocationPermissions(this)) {
+                if (checkLocationPermissions(this)) {
                     locationManager.addGpsStatusListener(this);
                 }
                 else {
@@ -330,7 +345,7 @@ public class MainActivity extends RoboActivity
         else {
             gpsStatusTextView.setText(getString(R.string.status_gps_no_support));
             Toast.makeText(this, getResources().getText(R.string.text_no_gps_support),
-                    Toast.LENGTH_LONG).show();
+                    Toast.LENGTH_SHORT).show();
             Log.e(TAG, "Unable to retrieve the GPS provider");
         }
         // TODO disable GPS controls into Preferences
@@ -367,7 +382,7 @@ public class MainActivity extends RoboActivity
         }
         else {
             Toast.makeText(this, getResources().getText(R.string.text_no_bluetooth_id),
-                    Toast.LENGTH_LONG).show();
+                    Toast.LENGTH_SHORT).show();
         }
 
         // TODO reimplement this using the new approach
@@ -379,7 +394,7 @@ public class MainActivity extends RoboActivity
         }
         else {
             Toast.makeText(this, getResources().getText(R.string.text_no_orientation_sensor),
-                    Toast.LENGTH_LONG).show();
+                    Toast.LENGTH_SHORT).show();
         }
 
         // create a log instance
@@ -415,7 +430,7 @@ public class MainActivity extends RoboActivity
 
         if (!prerequisites) {
             Toast.makeText(this, getResources().getText(R.string.text_bluetooth_disabled),
-                    Toast.LENGTH_LONG).show();
+                    Toast.LENGTH_SHORT).show();
 
             // ask the user to enable Bluetooth
             Intent enableBluetoothIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -534,7 +549,7 @@ public class MainActivity extends RoboActivity
         currentTrip = tripLog.startTrip();
         if (currentTrip == null) {
             Toast.makeText(this, getResources().getText(R.string.text_save_trip_not_available),
-                    Toast.LENGTH_LONG).show();
+                    Toast.LENGTH_SHORT).show();
         }
 
         // start command execution
@@ -688,7 +703,29 @@ public class MainActivity extends RoboActivity
 
     @Override
     public void onLocationChanged(Location location) {
+        // save the location just retrieved in the lastLocation variable
         lastLocation = location;
+        // add the distance just traveled to the total distance
+        setDistanceTraveled(lastLocation);
+        // updates the text view which displays
+        // the distance traveled in this trip as calculated
+        // using the gps coordinates
+        NumberFormat numberFormat = new DecimalFormat(DECIMAL_FORMAT_PATTERN);
+        String formattedDistance = numberFormat.format(totalTraveled / KILOMETER);
+        updateTextView(distance, String.valueOf(formattedDistance));
+    }
+
+    private void setDistanceTraveled(Location location) {
+        if (previousLocation == null) {
+            previousLocation = location;
+        }
+        double distance = PositionUtil.calculateDistance(
+                previousLocation.getLatitude(),
+                previousLocation.getLongitude(),
+                location.getLatitude(),
+                location.getLongitude());
+        previousLocation = location;
+        totalTraveled = totalTraveled + distance;
     }
 
     @Override
@@ -728,7 +765,7 @@ public class MainActivity extends RoboActivity
                 bluetoothStatusTextView.setText(getString(R.string.status_bluetooth_connected));
             }
             else {
-                Toast.makeText(this, R.string.text_bluetooth_disabled, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.text_bluetooth_disabled, Toast.LENGTH_SHORT).show();
             }
         }
         super.onActivityResult(requestCode, resultCode, data);

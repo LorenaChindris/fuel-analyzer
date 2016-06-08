@@ -130,4 +130,18 @@
             android:summary="@string/pref_dirname_summary"
             android:title="@string/pref_dirname_title" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/title_pref_fuel_price">
+        <EditTextPreference
+            android:defaultValue="1.189"
+            android:dialogTitle="@string/pref_gasoline_price_title"
+            android:key="gasoline_price"
+            android:summary="@string/pref_gasoline_price_summary"
+            android:title="@string/pref_gasoline_price_title" />
+        <EditTextPreference
+            android:defaultValue="1.2"
+            android:dialogTitle="@string/pref_diesel_price_title"
+            android:key="diesel_price"
+            android:summary="@string/pref_diesel_price_summary"
+            android:title="@string/pref_diesel_price_title" />
+    </PreferenceCategory>
 </PreferenceScreen>

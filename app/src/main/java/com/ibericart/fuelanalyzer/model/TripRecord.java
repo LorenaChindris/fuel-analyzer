@@ -28,6 +28,10 @@ public class TripRecord {
     // the amount of time this trip took
     private String engineRuntime;
 
+    // trip distance in kilometers
+    // based on this value and the CO2 emissions table we can calculate the emissions
+    private Double distance;
+
     public TripRecord() {
         startDate = new Date();
     }
@@ -96,5 +100,13 @@ public class TripRecord {
         if (!value.equals(ZERO_TIMER)) {
             this.engineRuntime = value;
         }
+    }
+
+    public Double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(Double distance) {
+        this.distance = distance;
     }
 }

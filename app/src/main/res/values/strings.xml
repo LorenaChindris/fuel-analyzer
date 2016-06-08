@@ -26,6 +26,7 @@
     <string name="text_bluetooth" translatable="false">Bluetooth</string>
     <string name="text_orientation_default" translatable="false">N</string>
     <string name="text_zero" translatable="false">0</string>
+    <string name="text_zero_km" translatable="false">0 km</string>
     <string name="text_consumption_default" translatable="false">0l/100km</string>
     <string name="text_runtime_default" translatable="false">00:00:00</string>
     <string name="title_pref_obd">OBD Preferences</string>
@@ -105,4 +106,9 @@
     <string name="pref_dev_email_title">Developer Email</string>
     <string name="pref_dev_email_summary">Logs will be emailed to this address</string>
     <string name="text_noerrors">There were no errors found.!</string>
+    <string name="title_pref_fuel_price">Fuel Price</string>
+    <string name="pref_gasoline_price_title">Gasoline Price</string>
+    <string name="pref_gasoline_price_summary">Current gasoline price in euros</string>
+    <string name="pref_diesel_price_title">Diesel Price</string>
+    <string name="pref_diesel_price_summary">Current diesel price in euros</string>
 </resources>

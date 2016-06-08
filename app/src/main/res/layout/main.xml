@@ -14,9 +14,18 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
+            android:layout_weight="1"
             android:tag="SPEED"
             android:text="@string/text_zero"
+            android:textSize="@dimen/abc_text_size_display_3_material" />
+
+        <TextView
+            android:id="@+id/distance_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:text="@string/text_zero_km"
             android:textSize="@dimen/abc_text_size_display_3_material" />
 
         <TextView
@@ -72,7 +81,7 @@
             android:id="@+id/data_table"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:stretchColumns="*"></TableLayout>
+            android:stretchColumns="*" />
     </ScrollView>
 
     <TableRow

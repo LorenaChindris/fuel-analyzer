@@ -252,7 +252,7 @@ public class TripLog {
      * from the database.
      *
      * @param cursor a Cursor containing results of a database query.
-     * @return a GasRecord instance (null if no data).
+     * @return a TripRecord instance (null if no data).
      */
     private TripRecord getRecordFromCursor(Cursor cursor) {
         final String tag = TAG + ".getRecordFromCursor()";

@@ -217,7 +217,7 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
 
             // we shouldn't get here, still warn user
             Toast.makeText(this, "This device does not support Bluetooth.",
-                    Toast.LENGTH_LONG).show();
+                    Toast.LENGTH_SHORT).show();
 
             return;
         }
@@ -233,7 +233,7 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
                 if (mBtAdapter == null || !mBtAdapter.isEnabled()) {
                     Toast.makeText(thisActivity,
                             "This device does not support Bluetooth or it is disabled.",
-                            Toast.LENGTH_LONG).show();
+                            Toast.LENGTH_SHORT).show();
                     return false;
                 }
                 return true;
@@ -273,7 +273,7 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
             } catch (Exception e) {
                 Toast.makeText(this,
                         "Couldn't parse '" + newValue.toString() + "' as a number.",
-                        Toast.LENGTH_LONG).show();
+                        Toast.LENGTH_SHORT).show();
             }
         }
         return false;
