@@ -17,7 +17,7 @@
             android:layout_weight="1"
             android:tag="SPEED"
             android:text="@string/text_zero"
-            android:textSize="@dimen/abc_text_size_display_3_material" />
+            android:textSize="@dimen/abc_text_size_headline_material" />
 
         <TextView
             android:id="@+id/distance_text"
@@ -26,7 +26,7 @@
             android:layout_weight="1"
             android:gravity="end"
             android:text="@string/text_zero_km"
-            android:textSize="@dimen/abc_text_size_display_3_material" />
+            android:textSize="@dimen/abc_text_size_headline_material" />
 
         <TextView
             android:id="@+id/compass_text"
@@ -35,7 +35,7 @@
             android:layout_weight="1"
             android:gravity="end"
             android:text="@string/text_orientation_default"
-            android:textSize="@dimen/abc_text_size_display_3_material" />
+            android:textSize="@dimen/abc_text_size_headline_material" />
     </TableRow>
 
     <TableRow

@@ -120,7 +120,7 @@ public class MainActivity extends RoboActivity
     private static final String KEY_VALUE_SEPARATOR = ": ";
 
     private static final int KILOMETER = 1000;
-    private static final String DECIMAL_FORMAT_PATTERN = "#.00";
+    private static final String DECIMAL_FORMAT_PATTERN = "00.00";
 
     static {
         RoboGuice.setUseAnnotationDatabases(false);
@@ -712,7 +712,8 @@ public class MainActivity extends RoboActivity
         // using the gps coordinates
         NumberFormat numberFormat = new DecimalFormat(DECIMAL_FORMAT_PATTERN);
         String formattedDistance = numberFormat.format(totalTraveled / KILOMETER);
-        updateTextView(distance, String.valueOf(formattedDistance));
+        updateTextView(distance, String.valueOf(formattedDistance)
+                + getResources().getText(R.string.text_km));
     }
 
     private void setDistanceTraveled(Location location) {
