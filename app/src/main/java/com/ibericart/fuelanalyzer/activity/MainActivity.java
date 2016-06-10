@@ -328,18 +328,18 @@ public class MainActivity extends RoboActivity
     private boolean gpsInit() throws SecurityException {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (locationManager != null) {
-            locationProvider = locationManager.getProvider(LocationManager.GPS_PROVIDER);
-            if (locationProvider != null) {
-                if (checkLocationPermissions(this)) {
+            if (checkLocationPermissions(this)) {
+                locationProvider = locationManager.getProvider(LocationManager.GPS_PROVIDER);
+                if (locationProvider != null) {
                     locationManager.addGpsStatusListener(this);
+                    if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                        gpsStatusTextView.setText(getString(R.string.status_gps_ready));
+                        return true;
+                    }
                 }
-                else {
-                    showPermissionDialog();
-                }
-                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                    gpsStatusTextView.setText(getString(R.string.status_gps_ready));
-                    return true;
-                }
+            }
+            else {
+                showPermissionDialog();
             }
         }
         else {
