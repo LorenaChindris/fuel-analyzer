@@ -243,8 +243,73 @@ public class MainActivity extends RoboActivity
                     csvLogWriter.writeLineCSV(obdReading);
                 }
 
-                // TODO take the relevant readings parameters and evaluate the optimal gear
-                int recommendedGear = ObdUtil.evaluateOptimalGear(readings);
+                Map<String, String> params = new HashMap<>();
+                params.put("final_drive_ratio", preferences.getString("final_drive_ratio", ""));
+                params.put("max_torque_rpm", preferences.getString("max_torque_rpm", ""));
+                params.put("min_load_max_acceleration", preferences.getString("min_load_max_acceleration", ""));
+                params.put("min_throttle_max_acceleration", preferences.getString("min_throttle_max_acceleration", ""));
+                params.put("initial_throttle", preferences.getString("initial_throttle", ""));
+                params.put("dynamic_rolling_radius", preferences.getString("dynamic_rolling_radius", ""));
+
+                params.put("gear_ratios_one", preferences.getString("gear_ratios_one", ""));
+                params.put("gear_ratios_two", preferences.getString("gear_ratios_two", ""));
+                params.put("gear_ratios_three", preferences.getString("gear_ratios_three", ""));
+                params.put("gear_ratios_four", preferences.getString("gear_ratios_four", ""));
+                params.put("gear_ratios_five", preferences.getString("gear_ratios_five", ""));
+
+                params.put("min_rpm_needed_one", preferences.getString("min_rpm_needed_one", ""));
+                params.put("min_rpm_needed_two", preferences.getString("min_rpm_needed_two", ""));
+                params.put("min_rpm_needed_three", preferences.getString("min_rpm_needed_three", ""));
+                params.put("min_rpm_needed_four", preferences.getString("min_rpm_needed_four", ""));
+                params.put("min_rpm_needed_five", preferences.getString("min_rpm_needed_five", ""));
+
+                params.put("max_load_constant_speed_one", preferences.getString("max_load_constant_speed_one", ""));
+                params.put("max_load_constant_speed_two", preferences.getString("max_load_constant_speed_two", ""));
+                params.put("max_load_constant_speed_three", preferences.getString("max_load_constant_speed_three", ""));
+                params.put("max_load_constant_speed_four", preferences.getString("max_load_constant_speed_four", ""));
+                params.put("max_load_constant_speed_five", preferences.getString("max_load_constant_speed_five", ""));
+
+                params.put("max_throttle_constant_speed_one", preferences.getString("max_throttle_constant_speed_one", ""));
+                params.put("max_throttle_constant_speed_two", preferences.getString("max_throttle_constant_speed_tow", ""));
+                params.put("max_throttle_constant_speed_three", preferences.getString("max_throttle_constant_speed_three", ""));
+                params.put("max_throttle_constant_speed_four", preferences.getString("max_throttle_constant_speed_four", ""));
+                params.put("max_throttle_constant_speed_five", preferences.getString("max_throttle_constant_speed_five", ""));
+
+                params.put("min_load_throttle_position_ratio_one", preferences.getString("min_load_throttle_position_ratio_one", ""));
+                params.put("min_load_throttle_position_ratio_two", preferences.getString("min_load_throttle_position_ratio_two", ""));
+                params.put("min_load_throttle_position_ratio_three", preferences.getString("min_load_throttle_position_ratio_three", ""));
+                params.put("min_load_throttle_position_ratio_four", preferences.getString("min_load_throttle_position_ratio_four", ""));
+                params.put("min_load_throttle_position_ratio_five", preferences.getString("min_load_throttle_position_ratio_five", ""));
+
+                params.put("gear_ratio_limits_one_min", preferences.getString("gear_ratio_limits_one_min", ""));
+                params.put("gear_ratio_limits_one_max", preferences.getString("gear_ratio_limits_one_max", ""));
+                params.put("gear_ratio_limits_two_min", preferences.getString("gear_ratio_limits_two_min", ""));
+                params.put("gear_ratio_limits_two_max", preferences.getString("gear_ratio_limits_two_max", ""));
+                params.put("gear_ratio_limits_three_min", preferences.getString("gear_ratio_limits_three_min", ""));
+                params.put("gear_ratio_limits_three_max", preferences.getString("gear_ratio_limits_three_max", ""));
+                params.put("gear_ratio_limits_four_min", preferences.getString("gear_ratio_limits_four_min", ""));
+                params.put("gear_ratio_limits_four_max", preferences.getString("gear_ratio_limits_four_max", ""));
+                params.put("gear_ratio_limits_five_min", preferences.getString("gear_ratio_limits_five_min", ""));
+                params.put("gear_ratio_limits_five_max", preferences.getString("gear_ratio_limits_five_max", ""));
+
+                int recommendedGear = ObdUtil.evaluateOptimalGear(readings, params);
+                String suffix = "";
+                switch (recommendedGear) {
+                    case 0:
+                        break;
+                    case 1:
+                        suffix = "st";
+                        break;
+                    case 2:
+                        suffix = "nd";
+                        break;
+                    case 3:
+                        suffix = "rd";
+                        break;
+                    default:
+                        suffix = "th";
+                }
+                updateTextView(gear, recommendedGear + suffix);
 
                 commandResult.clear();
             }

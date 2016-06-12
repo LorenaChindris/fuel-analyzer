@@ -15,7 +15,7 @@ public class ObdUtil {
 
     // prepare the constants
     // r_d
-    private static final double DYNAMIC_ROLLING_RADIUS = 308;
+    private static final double DYNAMIC_ROLLING_RADIUS = 313;
     // i_0
     private static final double FINAL_DRIVE_RATIO = 4.36;
 
@@ -23,10 +23,11 @@ public class ObdUtil {
     private static final double i_c = (3600 * Math.PI * DYNAMIC_ROLLING_RADIUS)
             / (1000 * 30 * FINAL_DRIVE_RATIO);
 
-    private static final double[] TRANSMISSION_RATIO_MIN = new double[] {0, 3.3, 1.7, 1.2, 0.95, 0.7};
-    private static final double[] TRANSMISSION_RATIO_MAX = new double[] {0, 3.8, 2.2, 1.5, 1.1, 0.9};
+    private static final double[] TRANSMISSION_RATIO_MIN = new double[] {0, 3.57, 1.9, 1.18, 0.86, 0.67};
+    private static final double[] TRANSMISSION_RATIO_MAX = new double[] {0, 3.97, 2.3, 1.38, 1, 0.81};
 
     // engine speed that achieves maximum torque
+    // n_Memax
     private static final int MAX_TORQUE_RPM = 5000;
 
     // L_iconst
@@ -48,7 +49,7 @@ public class ObdUtil {
     private static final int[] MIN_RPM_NEEDED = new int[] {0, 0, 1000, 1500, 1800, 1800};
 
     // i_i
-    private static final double[] GEAR_RATIO = new double[] {0, 3.545, 1.913, 1.31, 1.027, 0.85};
+    private static final double[] GEAR_RATIO = new double[] {0, 3.77, 2.1, 1.28, 0.93, 0.74};
 
     public static String lookUpCommand(String commandName) {
         for (AvailableCommandNames item : AvailableCommandNames.values()) {
@@ -85,7 +86,7 @@ public class ObdUtil {
         return result;
     }
 
-    public static int evaluateOptimalGear(Map<String, String> readings) {
+    public static int evaluateOptimalGear(Map<String, String> readings, Map<String, String> params) {
         // a1: the group of parameters taken from the OBD reading - vehicle operation parameters
         // in real time (L, O, n, v)
 
@@ -173,6 +174,7 @@ public class ObdUtil {
             else {
                 RG = 1;
             }
+            return RG;
         }
         // D2
         else if (i >= TRANSMISSION_RATIO_MIN[2] && i <= TRANSMISSION_RATIO_MAX[2]) {
@@ -206,37 +208,88 @@ public class ObdUtil {
             O_const = MAX_THROTTLE_CONSTANT_SPEED[5];
             n_min = MIN_RPM_NEEDED[5];
         }
-        else if (v >= 40) { // TODO fix condition
+        // no gear is currently engaged
+        // is this a case of higher motion speed (higher than 40 km/h)
+        // or less at the minimum throttle opening (which excludes short-time gear shift)?
+        // D7
+        else if (O == 0 && v >= 40) { // TODO fix condition
             CG = 3;
-            // TODO min stuff
-            // evaluate k
-            // RG = k
+            // TODO
+            // fuel is wasted here
+            // compute the highest possible gear for this speed
+
+            double minValue = Double.MAX_VALUE;
+            int K = 5;
+            for (int k = 5; k >= CG; k--) {
+                double val = GEAR_RATIO[k] * v / i_c;
+                if (val < minValue) {
+                    minValue = val;
+                    K = k;
+                }
+            }
+            RG = K;
+            // O3
+            return RG;
+        }
+        // no gear is recommended
+        else {
+            // O2
+            return 0;
         }
         // D8
-        if (n >= n_min) { // TODO fix condition
+        if (O == 0 && n >= n_min) { // TODO fix condition
             // O4
             RG = CG;
+            return RG;
         }
         // D9
-        else if (L <= L_const) { // TODO fix condition
+        // approximately constant speed
+        else if (L <= L_const && O <= O_const) { // TODO fix condition
             // D10
             if (n < n_min) {
                 // O5
                 RG = CG != 2 ? (CG - 1) : CG;
+                return RG;
             }
             else {
-                // TODO min stuff
-                // evaluate k
-                // RG = k
+                // TODO
+                // compute the highest possible gear for this speed
+                
+                double minValue = Double.MAX_VALUE;
+                int K = 5;
+                for (int k = 5; k >= CG; k--) {
+                    double val = GEAR_RATIO[k] * v / i_c;
+                    if (val < minValue) {
+                        minValue = val;
+                        K = k;
+                    }
+                }
+                RG = K;
+                // O3
+                return RG;
             }
         }
         // D11
+        // maximum acceleration mode
         else if (L >= MAX_LOAD_MAX_ACCELERATION && (O >= MIN_THROTTLE_MAX_ACCELERATION) && CG != 2) { // TODO fix condition
-            // TODO min stuff
-            // evaluate k
+            // P7
+            // evaluate the gear which is by the engine speed the closest to
+            // the one corresponding to the maximum engine torque
+
+            double minValue = Double.MAX_VALUE;
+            int K = CG;
+            for (int k = CG; k >= 2; k--) {
+                double val = MAX_TORQUE_RPM * (GEAR_RATIO[k] * v / i_c);
+                if (val < minValue) {
+                    minValue = val;
+                    K = k;
+                }
+            }
             // O6
-            // RG = k
+            RG = K;
+            return RG;
         }
+        // middle and low degrees of acceleration
         // D12
         else if (v >= 100) {
             // O7
