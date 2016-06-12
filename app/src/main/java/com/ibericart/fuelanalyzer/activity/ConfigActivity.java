@@ -150,8 +150,8 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
      */
     public static float getGpsDistanceUpdatePeriod(SharedPreferences prefs) {
         String periodString = prefs
-                .getString(ConfigActivity.GPS_DISTANCE_PERIOD_KEY, "5"); // 5 as in meters
-        float period = 5; // by default 5 meters
+                .getString(ConfigActivity.GPS_DISTANCE_PERIOD_KEY, "1"); // 5 as in meters
+        float period = 1; // by default 5 meters
 
         try {
             period = Float.parseFloat(periodString);
@@ -159,7 +159,7 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
         }
 
         if (period <= 0) {
-            period = 5;
+            period = 1;
         }
 
         return period;

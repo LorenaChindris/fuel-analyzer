@@ -58,7 +58,7 @@ import com.ibericart.fuelanalyzer.model.ObdReading;
 import com.ibericart.fuelanalyzer.logger.TripLog;
 import com.ibericart.fuelanalyzer.model.TripRecord;
 import com.ibericart.fuelanalyzer.util.Constants;
-import com.ibericart.fuelanalyzer.util.ObdUtil;
+import com.ibericart.fuelanalyzer.util.ObdCalculator;
 import com.ibericart.fuelanalyzer.util.PositionUtil;
 
 import java.io.FileNotFoundException;
@@ -292,7 +292,7 @@ public class MainActivity extends RoboActivity
                 params.put("gear_ratio_limits_five_min", preferences.getString("gear_ratio_limits_five_min", ""));
                 params.put("gear_ratio_limits_five_max", preferences.getString("gear_ratio_limits_five_max", ""));
 
-                int recommendedGear = ObdUtil.evaluateOptimalGear(readings, params);
+                int recommendedGear = ObdCalculator.evaluateOptimalGear(readings, params);
                 String suffix = "";
                 switch (recommendedGear) {
                     case 0:
@@ -359,7 +359,7 @@ public class MainActivity extends RoboActivity
     public void stateUpdate(final ObdCommandJob job) {
         final String commandName = job.getCommand().getName();
         String commandResult;
-        final String commandId = ObdUtil.lookUpCommand(commandName);
+        final String commandId = ObdCalculator.lookUpCommand(commandName);
 
         if (job.getState().equals(ObdCommandJob.ObdCommandJobState.EXECUTION_ERROR)) {
             commandResult = job.getCommand().getResult();

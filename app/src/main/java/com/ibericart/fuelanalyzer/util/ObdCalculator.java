@@ -9,13 +9,13 @@ import java.util.Map;
 /**
  * Contains utility methods for OBD related tasks.
  */
-public class ObdUtil {
+public class ObdCalculator {
 
-    private static final String TAG = ObdUtil.class.getName();
+    private static final String TAG = ObdCalculator.class.getName();
 
     // prepare the constants
     // r_d
-    private static final double DYNAMIC_ROLLING_RADIUS = 313;
+    private static final double DYNAMIC_ROLLING_RADIUS = 0.313;
     // i_0
     private static final double FINAL_DRIVE_RATIO = 4.36;
 
@@ -68,12 +68,23 @@ public class ObdUtil {
         double result = 0.0;
         if (readings != null && !readings.isEmpty()) {
             String value = readings.get(key);
+            Log.d(TAG, "Key = " + key + " Value = " + value);
             if (value != null) {
+                if (AvailableCommandNames.SPEED.name().equals(key)) {
+                    value = value.substring(0, value.length() - 4);
+                }
+                else if (AvailableCommandNames.ENGINE_RPM.name().equals(key)
+                        || AvailableCommandNames.THROTTLE_POS.name().equals(key)) {
+                    value = value.substring(0, value.length() - 3);
+                }
+                else if (AvailableCommandNames.ENGINE_LOAD.name().equals(key)) {
+                    value = value.substring(0, value.length() - 1);
+                }
                 try {
                     result = Double.valueOf(value);
                 }
                 catch (NumberFormatException e) {
-                    Log.e(TAG, "Could not parse double for key = " + key + "and value = " + value);
+                    Log.e(TAG, "Could not parse double for key = " + key + " and value = " + value);
                 }
             }
             else {
@@ -133,28 +144,28 @@ public class ObdUtil {
         // if the vehicle is stopped there is no need to evaluate the recommended gear
         // D0
         if (v == 0) {
-            Log.d(TAG, "Vehicle speed is 0");
+            Log.e(TAG, "Vehicle speed is 0");
             return 0;
         }
 
         // n = engine speed
         double n = readDouble(readings, AvailableCommandNames.ENGINE_RPM.name());
         if (n == 0) {
-            Log.d(TAG, "Engine speed is 0");
+            Log.e(TAG, "Engine speed is 0");
             return 0;
         }
 
         // L = calculated load value
         double L = readDouble(readings, AvailableCommandNames.ENGINE_LOAD.name());
         if (L == 0) {
-            Log.d(TAG, "Engine load is 0");
+            Log.e(TAG, "Engine load is 0");
             return 0;
         }
 
         // O = throttle opening
         double O = readDouble(readings, AvailableCommandNames.THROTTLE_POS.name());
         if (O == 0) {
-            Log.d(TAG, "Throttle position is 0");
+            Log.e(TAG, "Throttle position is 0");
             return 0;
         }
 
@@ -165,6 +176,7 @@ public class ObdUtil {
         // D1
         if (i >= TRANSMISSION_RATIO_MIN[1] && i <= TRANSMISSION_RATIO_MAX[1]) {
             // P1
+            Log.e(TAG, "P1");
             CG = 1;
             // D6
             if (n >= MAX_TORQUE_RPM) {
@@ -174,11 +186,13 @@ public class ObdUtil {
             else {
                 RG = 1;
             }
+            Log.e(TAG, "RG = " + RG);
             return RG;
         }
         // D2
         else if (i >= TRANSMISSION_RATIO_MIN[2] && i <= TRANSMISSION_RATIO_MAX[2]) {
             // P2
+            Log.e(TAG, "P2");
             CG = 2;
             L_const = MAX_LOAD_CONSTANT_SPEED[2];
             O_const = MAX_THROTTLE_CONSTANT_SPEED[2];
@@ -187,6 +201,7 @@ public class ObdUtil {
         // D3
         else if (i >= TRANSMISSION_RATIO_MIN[3] && i <= TRANSMISSION_RATIO_MAX[3]) {
             // P3
+            Log.e(TAG, "P3");
             CG = 3;
             L_const = MAX_LOAD_CONSTANT_SPEED[3];
             O_const = MAX_THROTTLE_CONSTANT_SPEED[3];
@@ -195,6 +210,7 @@ public class ObdUtil {
         // D4
         else if (i >= TRANSMISSION_RATIO_MIN[4] && i <= TRANSMISSION_RATIO_MAX[4]) {
             // P4
+            Log.e(TAG, "P4");
             CG = 4;
             L_const = MAX_LOAD_CONSTANT_SPEED[4];
             O_const = MAX_THROTTLE_CONSTANT_SPEED[4];
@@ -203,6 +219,7 @@ public class ObdUtil {
         // D5
         else if (i >= TRANSMISSION_RATIO_MIN[5] && i <= TRANSMISSION_RATIO_MAX[5]) {
             // P5
+            Log.e(TAG, "P5");
             CG = 5;
             L_const = MAX_LOAD_CONSTANT_SPEED[5];
             O_const = MAX_THROTTLE_CONSTANT_SPEED[5];
@@ -213,6 +230,7 @@ public class ObdUtil {
         // or less at the minimum throttle opening (which excludes short-time gear shift)?
         // D7
         else if (O == 0 && v >= 40) { // TODO fix condition
+            Log.e(TAG, "D7 - compute the highest possible gear for this speed");
             CG = 3;
             // TODO
             // fuel is wasted here
@@ -229,32 +247,37 @@ public class ObdUtil {
             }
             RG = K;
             // O3
+            Log.e(TAG, "O3 RG = " + RG);
             return RG;
         }
         // no gear is recommended
         else {
             // O2
+            Log.e(TAG, "O2 - no gear is recommended");
             return 0;
         }
         // D8
         if (O == 0 && n >= n_min) { // TODO fix condition
             // O4
+            Log.e(TAG, "O4 - RG = " + CG);
             RG = CG;
             return RG;
         }
         // D9
         // approximately constant speed
         else if (L <= L_const && O <= O_const) { // TODO fix condition
+            Log.e(TAG, "D9 - approximately constant speed");
             // D10
             if (n < n_min) {
                 // O5
                 RG = CG != 2 ? (CG - 1) : CG;
+                Log.e(TAG, "O5 - RG = " + RG);
                 return RG;
             }
             else {
                 // TODO
                 // compute the highest possible gear for this speed
-                
+
                 double minValue = Double.MAX_VALUE;
                 int K = 5;
                 for (int k = 5; k >= CG; k--) {
@@ -266,12 +289,14 @@ public class ObdUtil {
                 }
                 RG = K;
                 // O3
+                Log.e(TAG, "O3 - compute the highest possible value for this speed - RG = " + RG);
                 return RG;
             }
         }
         // D11
         // maximum acceleration mode
         else if (L >= MAX_LOAD_MAX_ACCELERATION && (O >= MIN_THROTTLE_MAX_ACCELERATION) && CG != 2) { // TODO fix condition
+            Log.e(TAG, "D7 - maximum acceleration mode");
             // P7
             // evaluate the gear which is by the engine speed the closest to
             // the one corresponding to the maximum engine torque
@@ -287,6 +312,7 @@ public class ObdUtil {
             }
             // O6
             RG = K;
+            Log.e(TAG, "O6 - RG = " + RG);
             return RG;
         }
         // middle and low degrees of acceleration
@@ -294,10 +320,13 @@ public class ObdUtil {
         else if (v >= 100) {
             // O7
             RG = 5;
+            Log.e(TAG, "O7 - RG = " + RG);
         }
         // D13
         else if (v >= 50 && v <= 100) {
+            Log.e(TAG, "D13");
             if (CG == 5) {
+                Log.e(TAG, "CG = " + CG);
                 if (L/O >= MIN_LOAD_THROTTLE[5]) {
                     RG = 5;
                 }
@@ -306,6 +335,7 @@ public class ObdUtil {
                 }
             }
             else if (CG == 4) {
+                Log.e(TAG, "CG = " + CG);
                 if (L/O >= MIN_LOAD_THROTTLE[4]) {
                     RG = 4;
                 }
@@ -314,6 +344,7 @@ public class ObdUtil {
                 }
             }
             else if (CG == 3) {
+                Log.e(TAG, "CG = " + CG);
                 if (L/O >= MIN_LOAD_THROTTLE[3]) {
                     RG = 3;
                 }
@@ -326,7 +357,9 @@ public class ObdUtil {
             }
         }
         else {
+            Log.e(TAG, "Speed less than 50 km/h");
             if (CG == 3) {
+                Log.e(TAG, "CG = " + CG);
                 if (L/O >= MIN_LOAD_THROTTLE[3]) {
                     RG = 3;
                 }
@@ -336,6 +369,7 @@ public class ObdUtil {
             }
             // D15
             else {
+                Log.e(TAG, "D15");
                 if (MIN_RPM_NEEDED[3] <= v * GEAR_RATIO[3] / i_c) {
                     RG = 3;
                 }
@@ -344,6 +378,7 @@ public class ObdUtil {
                 }
             }
         }
+        Log.e(TAG, "RG = " + RG);
         return RG;
     }
 }
