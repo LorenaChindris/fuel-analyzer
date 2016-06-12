@@ -10,8 +10,6 @@
     <string name="service_stopped">OBD connection has stopped.</string>
     <string name="notification_label">Tap to open Fuel Analyzer.</string>
     <string name="title_activity_trouble_codes">Trouble Codes</string>
-    <string name="pref_upload_category_title">Data Upload</string>
-    <string name="pref_upload_category" translatable="false">upload_category</string>
     <string name="title_activity_trips_list">Trips</string>
     <string name="menu_trip_list">Trips</string>
     <string name="menu_item_trip_delete">Delete</string>
@@ -60,13 +58,8 @@
     <string name="status_obd_data">receiving data&#8230;</string>
     <string name="status_obd_disconnected">disconnected</string>
     <string name="status_obd_no_support">NA</string>
-    <string name="pref_upload_title">Enable Data Upload</string>
-    <string name="pref_upload_summaryOff">Enable http data upload</string>
-    <string name="pref_upload_summaryOn">Disable http data upload</string>
-    <string name="pref_upload_url_title">Upload URL</string>
-    <string name="pref_upload_url_summary">POST URL that will accept real-time data</string>
-    <string name="pref_vehicle_id_title">Vehicle ID</string>
-    <string name="pref_vehicle_id_summary">Optional unique id of this vehicle, used with uploaded data</string>
+    <string name="pref_vehicle_id_title">VIN</string>
+    <string name="pref_vehicle_id_summary">Optional unique id of this vehicle</string>
     <string name="pref_bluetooth_title">Enable Bluetooth</string>
     <string name="pref_bluetooth_summaryOff">Turn on Bluetooth</string>
     <string name="pref_bluetooth_summaryOn">Turn off Bluetooth</string>
@@ -107,9 +100,105 @@
     <string name="pref_dev_email_title">Developer Email</string>
     <string name="pref_dev_email_summary">Logs will be emailed to this address</string>
     <string name="text_noerrors">There were no errors found.!</string>
+
     <string name="title_pref_fuel_price">Fuel Price</string>
     <string name="pref_gasoline_price_title">Gasoline Price</string>
     <string name="pref_gasoline_price_summary">Current gasoline price in euros</string>
     <string name="pref_diesel_price_title">Diesel Price</string>
     <string name="pref_diesel_price_summary">Current diesel price in euros</string>
+
+    <string name="pref_vehicle_data" translatable="false">vehicle_data</string>
+    <string name="pref_vehicle_data_title">Vehicle Data</string>
+
+    <string name="pref_gear_ratios" translatable="false">gear_ratios</string>
+    <string name="pref_gear_ratios_title">Gear Ratios</string>
+
+    <string name="pref_one_title">1st Gear</string>
+    <string name="pref_gear_ratios_one_summary">Gear ratio for the first gear</string>
+    <string name="pref_two_title">2nd Gear</string>
+    <string name="pref_gear_ratios_two_summary">Gear ratio for the second gear</string>
+    <string name="pref_three_title">3rd Gear</string>
+    <string name="pref_gear_ratios_three_summary">Gear ratio for the third gear</string>
+    <string name="pref_four_title">4th Gear</string>
+    <string name="pref_gear_ratios_four_summary">Gear ratio for the fourth gear</string>
+    <string name="pref_five_title">5th Gear</string>
+    <string name="pref_gear_ratios_five_summary">Gear ratio for the fifth gear</string>
+
+    <string name="pref_final_drive_ratio_title">Final Drive Ratio</string>
+    <string name="pref_final_drive_ratio_summary">Final Drive Ratio</string>
+
+    <string name="pref_max_torque_rpm_title">Maximum Torque RPM</string>
+    <string name="pref_max_torque_rpm_summary">The engine speed for maximum torque</string>
+
+    <string name="pref_min_rpm_needed" translatable="false">min_rpm_needed</string>
+    <string name="pref_min_rpm_needed_title">Minimum RPM Needed</string>
+    <string name="pref_min_rpm_needed_one_summary">Minimum engine speed needed for the first gear</string>
+    <string name="pref_min_rpm_needed_two_summary">Minimum engine speed needed for the second gear</string>
+    <string name="pref_min_rpm_needed_three_summary">Minimum engine speed needed for the third gear</string>
+    <string name="pref_min_rpm_needed_four_summary">Minimum engine speed needed for the fourth gear</string>
+    <string name="pref_min_rpm_needed_five_summary">Minimum engine speed needed for the fifth gear</string>
+
+    <string name="pref_max_load_constant_speed" translatable="false">max_load_constant_speed</string>
+    <string name="pref_max_load_constant_speed_title">Maximum load at constant speed (%)</string>
+    <string name="pref_max_load_constant_speed_one_summary">Maximum load for the first gear</string>
+    <string name="pref_max_load_constant_speed_two_summary">Maximum load for the second gear</string>
+    <string name="pref_max_load_constant_speed_three_summary">Maximum load for the third gear</string>
+    <string name="pref_max_load_constant_speed_four_summary">Maximum load for the fourth gear</string>
+    <string name="pref_max_load_constant_speed_five_summary">Maximum load for the fifth gear</string>
+
+    <string name="pref_max_throttle_constant_speed" translatable="false">max_throttle_constant_speed</string>
+    <string name="pref_max_throttle_constant_speed_title">Maximum throttle at constant speed (%)</string>
+    <string name="pref_max_throttle_constant_speed_one_summary">Maximum throttle position for the first gear</string>
+    <string name="pref_max_throttle_constant_speed_two_summary">Maximum throttle position for the second gear</string>
+    <string name="pref_max_throttle_constant_speed_three_summary">Maximum throttle position for the third gear</string>
+    <string name="pref_max_throttle_constant_speed_four_summary">Maximum throttle position for the fourth gear</string>
+    <string name="pref_max_throttle_constant_speed_five_summary">Maximum throttle position for the fifth gear</string>
+
+    <string name="pref_min_load_throttle_position_ratio" translatable="false">min_load_throttle_position_ratio</string>
+    <string name="pref_min_load_throttle_position_ratio_title">Minimum load / throttle position ratio</string>
+    <string name="pref_min_load_throttle_position_ratio_one_summary">Minimum load / throttle position ratio for the first gear</string>
+    <string name="pref_min_load_throttle_position_ratio_two_summary">Minimum load / throttle position ratio for the second gear</string>
+    <string name="pref_min_load_throttle_position_ratio_three_summary">Minimum load / throttle position ratio for the third gear</string>
+    <string name="pref_min_load_throttle_position_ratio_four_summary">Minimum load / throttle position ratio for the fourth gear</string>
+    <string name="pref_min_load_throttle_position_ratio_five_summary">Minimum load / throttle position ratio for the fifth gear</string>
+
+    <string name="pref_gear_ratio_limits" translatable="false">gear_ratio_limits</string>
+    <string name="pref_gear_ratio_limits_title">Gear ratio limits for identification of current gear</string>
+
+    <string name="pref_gear_ratio_limits_one_min_summary">Minimum gear ratio limit for the first gear</string>
+    <string name="pref_gear_ratio_limits_two_min_summary">Minimum gear ratio limit for the second gear</string>
+    <string name="pref_gear_ratio_limits_three_min_summary">Minimum gear ratio limit for the third gear</string>
+    <string name="pref_gear_ratio_limits_four_min_summary">Minimum gear ratio limit for the fourth gear</string>
+    <string name="pref_gear_ratio_limits_five_min_summary">Minimum gear ratio limit for the fifth gear</string>
+
+    <string name="pref_gear_ratio_limits_one_max_summary">Maximum gear ratio limit for the first gear</string>
+    <string name="pref_gear_ratio_limits_two_max_summary">Maximum gear ratio limit for the second gear</string>
+    <string name="pref_gear_ratio_limits_three_max_summary">Maximum gear ratio limit for the third gear</string>
+    <string name="pref_gear_ratio_limits_four_max_summary">Maximum gear ratio limit for the fourth gear</string>
+    <string name="pref_gear_ratio_limits_five_max_summary">Maximum gear ratio limit for the fifth gear</string>
+
+    <string name="pref_one_min_title">1st Gear - Minimum</string>
+    <string name="pref_two_min_title">2nd Gear - Minimum</string>
+    <string name="pref_three_min_title">3rd Gear - Minimum</string>
+    <string name="pref_four_min_title">4th Gear - Minimum</string>
+    <string name="pref_five_min_title">5th Gear - Minimum</string>
+
+    <string name="pref_one_max_title">1st Gear - Maximum</string>
+    <string name="pref_two_max_title">2nd Gear - Maximum</string>
+    <string name="pref_three_max_title">3rd Gear - Maximum</string>
+    <string name="pref_four_max_title">4th Gear - Maximum</string>
+    <string name="pref_five_max_title">5th Gear - Maximum</string>
+
+    <string name="pref_min_load_max_acceleration_title">Minimum Load (%)</string>
+    <string name="pref_min_load_max_acceleration_summary">Minimum load indicating maximum acceleration mode</string>
+
+    <string name="pref_min_throttle_max_acceleration_title">Minimum Throttle Position (%)</string>
+    <string name="pref_min_throttle_max_acceleration_summary">Minimum throttle position indicating maximum acceleration mode</string>
+
+    <string name="pref_initial_throttle_title">Initial Throttle Position (%)</string>
+    <string name="pref_initial_throttle_summary">The throttle position percentage</string>
+
+    <string name="pref_dynamic_rolling_radius_title">Dynamic Rolling Radius (mm)</string>
+    <string name="pref_dynamic_rolling_radius_summary">The dynamic rolling radius in millimeters</string>
+
 </resources>

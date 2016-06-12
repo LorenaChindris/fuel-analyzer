@@ -1,28 +1,299 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
     <PreferenceCategory
-        android:key="@string/pref_upload_category"
-        android:title="@string/pref_upload_category_title">
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:dialogTitle="@string/pref_upload_title"
-            android:key="upload_data_preference"
-            android:summaryOff="@string/pref_upload_summaryOff"
-            android:summaryOn="@string/pref_upload_summaryOn"
-            android:title="@string/pref_upload_title" />
-        <EditTextPreference
-            android:defaultValue="http://www.example.com/obd/get_data.php"
-            android:dialogTitle="@string/pref_upload_url_title"
-            android:key="upload_url_preference"
-            android:summary="@string/pref_upload_url_summary"
-            android:title="@string/pref_upload_url_title" />
+        android:key="@string/pref_vehicle_data"
+        android:title="@string/pref_vehicle_data_title">
         <EditTextPreference
             android:defaultValue=""
             android:dialogTitle="@string/pref_vehicle_id_title"
             android:key="vehicle_id_preference"
             android:summary="@string/pref_vehicle_id_summary"
             android:title="@string/pref_vehicle_id_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_final_drive_ratio_title"
+            android:key="final_drive_ratio"
+            android:summary="@string/pref_final_drive_ratio_summary"
+            android:title="@string/pref_final_drive_ratio_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_max_torque_rpm_title"
+            android:key="max_torque_rpm"
+            android:summary="@string/pref_max_torque_rpm_summary"
+            android:title="@string/pref_max_torque_rpm_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_min_load_max_acceleration_title"
+            android:key="min_load_max_acceleration"
+            android:summary="@string/pref_min_load_max_acceleration_summary"
+            android:title="@string/pref_min_load_max_acceleration_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_min_throttle_max_acceleration_title"
+            android:key="min_throttle_max_acceleration"
+            android:summary="@string/pref_min_throttle_max_acceleration_summary"
+            android:title="@string/pref_min_throttle_max_acceleration_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_initial_throttle_title"
+            android:key="initial_throttle"
+            android:summary="@string/pref_initial_throttle_summary"
+            android:title="@string/pref_initial_throttle_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_dynamic_rolling_radius_title"
+            android:key="dynamic_rolling_radius"
+            android:summary="@string/pref_dynamic_rolling_radius_summary"
+            android:title="@string/pref_dynamic_rolling_radius_title" />
     </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="@string/pref_gear_ratios"
+        android:title="@string/pref_gear_ratios_title">
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_one_title"
+            android:key="gear_ratios_one"
+            android:summary="@string/pref_gear_ratios_one_summary"
+            android:title="@string/pref_one_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_two_title"
+            android:key="gear_ratios_two"
+            android:summary="@string/pref_gear_ratios_two_summary"
+            android:title="@string/pref_two_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_three_title"
+            android:key="gear_ratios_three"
+            android:summary="@string/pref_gear_ratios_three_summary"
+            android:title="@string/pref_three_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_four_title"
+            android:key="gear_ratios_four"
+            android:summary="@string/pref_gear_ratios_four_summary"
+            android:title="@string/pref_four_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_five_title"
+            android:key="gear_ratios_five"
+            android:summary="@string/pref_gear_ratios_five_summary"
+            android:title="@string/pref_five_title" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="@string/pref_min_rpm_needed"
+        android:title="@string/pref_min_rpm_needed_title">
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_one_title"
+            android:key="min_rpm_needed_one"
+            android:summary="@string/pref_min_rpm_needed_one_summary"
+            android:title="@string/pref_one_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_two_title"
+            android:key="min_rpm_needed_two"
+            android:summary="@string/pref_min_rpm_needed_two_summary"
+            android:title="@string/pref_two_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_three_title"
+            android:key="min_rpm_needed_three"
+            android:summary="@string/pref_min_rpm_needed_three_summary"
+            android:title="@string/pref_three_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_four_title"
+            android:key="min_rpm_needed_four"
+            android:summary="@string/pref_min_rpm_needed_four_summary"
+            android:title="@string/pref_four_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_five_title"
+            android:key="min_rpm_needed_five"
+            android:summary="@string/pref_min_rpm_needed_five_summary"
+            android:title="@string/pref_five_title" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="@string/pref_max_load_constant_speed"
+        android:title="@string/pref_max_load_constant_speed_title">
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_one_title"
+            android:key="max_load_constant_speed_one"
+            android:summary="@string/pref_max_load_constant_speed_one_summary"
+            android:title="@string/pref_one_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_two_title"
+            android:key="max_load_constant_speed_two"
+            android:summary="@string/pref_max_load_constant_speed_two_summary"
+            android:title="@string/pref_two_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_three_title"
+            android:key="max_load_constant_speed_three"
+            android:summary="@string/pref_max_load_constant_speed_three_summary"
+            android:title="@string/pref_three_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_four_title"
+            android:key="max_load_constant_speed_four"
+            android:summary="@string/pref_max_load_constant_speed_four_summary"
+            android:title="@string/pref_four_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_five_title"
+            android:key="max_load_constant_speed_five"
+            android:summary="@string/pref_max_load_constant_speed_five_summary"
+            android:title="@string/pref_five_title" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="@string/pref_max_throttle_constant_speed"
+        android:title="@string/pref_max_throttle_constant_speed_title">
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_one_title"
+            android:key="max_throttle_constant_speed_one"
+            android:summary="@string/pref_max_throttle_constant_speed_one_summary"
+            android:title="@string/pref_one_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_two_title"
+            android:key="max_throttle_constant_speed_two"
+            android:summary="@string/pref_max_throttle_constant_speed_two_summary"
+            android:title="@string/pref_two_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_three_title"
+            android:key="max_throttle_constant_speed_three"
+            android:summary="@string/pref_max_throttle_constant_speed_three_summary"
+            android:title="@string/pref_three_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_four_title"
+            android:key="max_throttle_constant_speed_four"
+            android:summary="@string/pref_max_throttle_constant_speed_four_summary"
+            android:title="@string/pref_four_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_five_title"
+            android:key="max_throttle_constant_speed_five"
+            android:summary="@string/pref_max_throttle_constant_speed_five_summary"
+            android:title="@string/pref_five_title" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="@string/pref_min_load_throttle_position_ratio"
+        android:title="@string/pref_min_load_throttle_position_ratio_title">
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_one_title"
+            android:key="min_load_throttle_position_ratio_one"
+            android:summary="@string/pref_min_load_throttle_position_ratio_one_summary"
+            android:title="@string/pref_one_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_two_title"
+            android:key="min_load_throttle_position_ratio_two"
+            android:summary="@string/pref_min_load_throttle_position_ratio_two_summary"
+            android:title="@string/pref_two_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_three_title"
+            android:key="min_load_throttle_position_ratio_three"
+            android:summary="@string/pref_min_load_throttle_position_ratio_three_summary"
+            android:title="@string/pref_three_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_four_title"
+            android:key="min_load_throttle_position_ratio_four"
+            android:summary="@string/pref_min_load_throttle_position_ratio_four_summary"
+            android:title="@string/pref_four_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_five_title"
+            android:key="min_load_throttle_position_ratio_five"
+            android:summary="@string/pref_min_load_throttle_position_ratio_five_summary"
+            android:title="@string/pref_five_title" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="@string/pref_gear_ratio_limits"
+        android:title="@string/pref_gear_ratio_limits_title">
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_one_min_title"
+            android:key="gear_ratio_limits_one_min"
+            android:summary="@string/pref_gear_ratio_limits_one_min_summary"
+            android:title="@string/pref_one_min_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_one_max_title"
+            android:key="gear_ratio_limits_one_max"
+            android:summary="@string/pref_gear_ratio_limits_one_max_summary"
+            android:title="@string/pref_one_max_title" />
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_two_min_title"
+            android:key="gear_ratio_limits_two_min"
+            android:summary="@string/pref_gear_ratio_limits_two_min_summary"
+            android:title="@string/pref_two_min_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_two_max_title"
+            android:key="gear_ratio_limits_two_max"
+            android:summary="@string/pref_gear_ratio_limits_two_max_summary"
+            android:title="@string/pref_two_max_title" />
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_three_min_title"
+            android:key="gear_ratio_limits_three_min"
+            android:summary="@string/pref_gear_ratio_limits_three_min_summary"
+            android:title="@string/pref_three_min_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_three_max_title"
+            android:key="gear_ratio_limits_three_max"
+            android:summary="@string/pref_gear_ratio_limits_three_max_summary"
+            android:title="@string/pref_three_max_title" />
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_four_min_title"
+            android:key="gear_ratio_limits_four_min"
+            android:summary="@string/pref_gear_ratio_limits_four_min_summary"
+            android:title="@string/pref_four_min_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_four_max_title"
+            android:key="gear_ratio_limits_four_max"
+            android:summary="@string/pref_gear_ratio_limits_four_max_summary"
+            android:title="@string/pref_four_max_title" />
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_five_min_title"
+            android:key="gear_ratio_limits_five_min"
+            android:summary="@string/pref_gear_ratio_limits_five_min_summary"
+            android:title="@string/pref_five_min_title" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:dialogTitle="@string/pref_five_max_title"
+            android:key="gear_ratio_limits_five_max"
+            android:summary="@string/pref_gear_ratio_limits_five_max_summary"
+            android:title="@string/pref_five_max_title" />
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/title_pref_bluetooth">
         <CheckBoxPreference
             android:defaultValue="false"
