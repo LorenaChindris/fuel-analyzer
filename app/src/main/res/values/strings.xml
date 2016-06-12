@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Fuel Analyzer</string>
+    <string name="app_name" translatable="false">Fuel Saver</string>
     <string name="action_settings">Settings</string>
     <string name="action_clear_codes">Clear Codes</string>
-    <string name="notification_action">Tap to open Fuel Analyzer</string>
+    <string name="notification_action">Tap to open Fuel Saver</string>
     <string name="command_list">Choose a command</string>
     <string name="service_starting">Starting OBD connection..</string>
     <string name="service_started">OBD connection has started.</string>
     <string name="service_stopped">OBD connection has stopped.</string>
-    <string name="notification_label">Tap to open Fuel Analyzer.</string>
+    <string name="notification_label">Tap to open Fuel Saver.</string>
     <string name="title_activity_trouble_codes">Trouble Codes</string>
     <string name="title_activity_trips_list">Trips</string>
     <string name="menu_trip_list">Trips</string>
@@ -93,7 +93,7 @@
     <string name="title_pref_full_logging"> Full logging configuration </string>
     <string name="pref_enable_full_logging_summary"> Enables full offline logging with upload</string>
     <string name="pref_enable_full_logging_title"> Enable full logging </string>
-    <string name="default_dirname_full_logging">FuelAnalyzerLogs</string>
+    <string name="default_dirname_full_logging">FuelSaverLogs</string>
     <string name="pref_dirname_dialogTitle">Choose the name of the directory to save the logs</string>
     <string name="pref_dirname_title">Directory name</string>
     <string name="pref_dirname_summary">Name of the directory where to save the files</string>
