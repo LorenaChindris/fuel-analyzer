@@ -41,6 +41,19 @@
     <TableRow
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/gear_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:gravity="center"
+            android:text="@string/text_zero"
+            android:textSize="@dimen/abc_text_size_display_3_material" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
 
         <TextView
             android:layout_width="0dp"

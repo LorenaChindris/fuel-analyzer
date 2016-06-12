@@ -49,19 +49,23 @@ public class ConfigActivity extends PreferenceActivity implements OnPreferenceCh
     public static final String ENABLE_FULL_LOGGING_KEY = "enable_full_logging";
     public static final String DIRECTORY_FULL_LOGGING_KEY = "directory_full_logging";
     public static final String DEV_EMAIL_KEY = "dev_email";
+    // default update period in seconds
+    private static final String DEFAULT_UPDATE_PERIOD = "1";
+    private static final int DEFAULT_UPDATE_PERIOD_MILLISECONDS = 1000;
+    private static final int ONE_SECOND_MILLIS = 1000;
 
     public static int getObdUpdatePeriod(SharedPreferences prefs) {
         String periodString = prefs.
-                getString(ConfigActivity.OBD_UPDATE_PERIOD_KEY, "4"); // 4 as in seconds
-        int period = 4000; // by default 4000ms
+                getString(ConfigActivity.OBD_UPDATE_PERIOD_KEY, DEFAULT_UPDATE_PERIOD);
+        int period =  DEFAULT_UPDATE_PERIOD_MILLISECONDS; // by default 1000ms
 
         try {
-            period = (int) (Double.parseDouble(periodString) * 1000);
+            period = (int) (Double.parseDouble(periodString) * ONE_SECOND_MILLIS);
         } catch (Exception e) {
         }
 
         if (period <= 0) {
-            period = 4000;
+            period = DEFAULT_UPDATE_PERIOD_MILLISECONDS;
         }
 
         return period;

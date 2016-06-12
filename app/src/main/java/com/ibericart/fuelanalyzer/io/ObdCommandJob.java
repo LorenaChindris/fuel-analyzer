@@ -3,10 +3,10 @@ package com.ibericart.fuelanalyzer.io;
 import com.github.pires.obd.commands.ObdCommand;
 
 /**
- * This class represents a job that the ObdGatewayService will have to execute and
+ * This class represents a job that the ObdService will have to execute and
  * maintain until the job is finished. It is, thereby, the application
  * representation of an ObdCommand instance plus a state that will be
- * interpreted and manipulated by the ObdGatewayService.
+ * interpreted and manipulated by the ObdService.
  * <br />
  * Uses code from https://github.com/pires/android-obd-reader
  */

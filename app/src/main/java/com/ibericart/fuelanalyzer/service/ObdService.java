@@ -41,9 +41,9 @@ import java.io.IOException;
  * <br />
  * Uses code from https://github.com/pires/android-obd-reader
  */
-public class ObdGatewayService extends AbstractGatewayService {
+public class ObdService extends AbstractService {
 
-    private static final String TAG = ObdGatewayService.class.getName();
+    private static final String TAG = ObdService.class.getName();
 
     private static final String EMPTY_STRING = "";
     private static final int OBD_COMMAND_TIMEOUT = 62;

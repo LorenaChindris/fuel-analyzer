@@ -17,16 +17,16 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 /**
- * This service is a mocked version of {@link com.ibericart.fuelanalyzer.service.ObdGatewayService}.
+ * This service is a mocked version of {@link ObdService}.
  * <p />
  * It will serve as a repository of ObdCommandJobs and at the same
  * time the application state-machine.
  * <br />
  * Uses code from https://github.com/pires/android-obd-reader
  */
-public class MockObdGatewayService extends AbstractGatewayService {
+public class MockObdService extends AbstractService {
 
-    private static final String TAG = MockObdGatewayService.class.getName();
+    private static final String TAG = MockObdService.class.getName();
     public static final int OBD_COMMAND_TIMEOUT = 62;
     public static final String MOCKED_DATA = "41 00 00 00>41 00 00 00>41 00 00 00>";
 

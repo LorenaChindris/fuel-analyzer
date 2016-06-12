@@ -25,13 +25,13 @@ import roboguice.service.RoboService;
  * <br />
  * Uses code from https://github.com/pires/android-obd-reader
  */
-public abstract class AbstractGatewayService extends RoboService {
+public abstract class AbstractService extends RoboService {
 
     public static final int NOTIFICATION_ID = 1;
 
-    private static final String TAG = AbstractGatewayService.class.getName();
+    private static final String TAG = AbstractService.class.getName();
 
-    private final IBinder binder = new AbstractGatewayServiceBinder();
+    private final IBinder binder = new AbstractServiceBinder();
 
     @Inject
     protected NotificationManager notificationManager;
@@ -145,10 +145,10 @@ public abstract class AbstractGatewayService extends RoboService {
 
     abstract public void stopService();
 
-    public class AbstractGatewayServiceBinder extends Binder {
+    public class AbstractServiceBinder extends Binder {
 
-        public AbstractGatewayService getService() {
-            return AbstractGatewayService.this;
+        public AbstractService getService() {
+            return AbstractService.this;
         }
     }
 }

@@ -48,11 +48,11 @@ import com.google.inject.Inject;
 
 import com.ibericart.fuelanalyzer.R;
 import com.ibericart.fuelanalyzer.config.ObdConfig;
-import com.ibericart.fuelanalyzer.service.AbstractGatewayService;
+import com.ibericart.fuelanalyzer.service.AbstractService;
 import com.ibericart.fuelanalyzer.logger.CsvLogWriter;
-import com.ibericart.fuelanalyzer.service.MockObdGatewayService;
+import com.ibericart.fuelanalyzer.service.MockObdService;
 import com.ibericart.fuelanalyzer.io.ObdCommandJob;
-import com.ibericart.fuelanalyzer.service.ObdGatewayService;
+import com.ibericart.fuelanalyzer.service.ObdService;
 import com.ibericart.fuelanalyzer.io.ObdProgressListener;
 import com.ibericart.fuelanalyzer.model.ObdReading;
 import com.ibericart.fuelanalyzer.logger.TripLog;
@@ -154,6 +154,9 @@ public class MainActivity extends RoboActivity
     @InjectView(R.id.distance_text)
     private TextView distance;
 
+    @InjectView(R.id.gear_text)
+    private TextView gear;
+
     @InjectView(R.id.BT_STATUS)
     private TextView bluetoothStatusTextView;
 
@@ -183,7 +186,7 @@ public class MainActivity extends RoboActivity
 
     private boolean isServiceBound;
 
-    private AbstractGatewayService service;
+    private AbstractService service;
 
     private Sensor orientationSensor = null;
 
@@ -230,14 +233,19 @@ public class MainActivity extends RoboActivity
                     gpsStatusTextView.setText(sb.toString());
                 }
 
+                Map<String, String> readings = new HashMap<>();
+                readings.putAll(commandResult);
+
                 if (preferences.getBoolean(ConfigActivity.ENABLE_FULL_LOGGING_KEY, false)) {
-                    // write the current reading to a CSV file
+                    // write the current readings to a CSV file
                     final String vin = preferences.getString(ConfigActivity.VEHICLE_ID_KEY, DEFAULT_VIN);
-                    Map<String, String> temp = new HashMap<>();
-                    temp.putAll(commandResult);
-                    ObdReading reading = new ObdReading(lat, lon, alt, System.currentTimeMillis(), vin, temp);
-                    csvLogWriter.writeLineCSV(reading);
+                    ObdReading obdReading = new ObdReading(lat, lon, alt, System.currentTimeMillis(), vin, readings);
+                    csvLogWriter.writeLineCSV(obdReading);
                 }
+
+                // TODO take the relevant readings parameters and evaluate the optimal gear
+                int recommendedGear = ObdUtil.evaluateOptimalGear(readings);
+
                 commandResult.clear();
             }
             // run again after the period defined in the preferences
@@ -251,7 +259,7 @@ public class MainActivity extends RoboActivity
         public void onServiceConnected(ComponentName className, IBinder binder) {
             Log.d(TAG, "The OBD service is bound");
             isServiceBound = true;
-            service = ((AbstractGatewayService.AbstractGatewayServiceBinder) binder).getService();
+            service = ((AbstractService.AbstractServiceBinder) binder).getService();
             service.setContext(MainActivity.this);
             Log.d(TAG, "Starting live data service");
             try {
@@ -302,6 +310,8 @@ public class MainActivity extends RoboActivity
             obdStatusTextView.setText(getString(R.string.status_obd_data));
         }
 
+        // update SPEED, FUEL_CONSUMPTION, ENGINE_RUNTIME, ENGINE_RPM (text views defined with
+        // these tags in main.xml)
         if (vehicleViewLinearLayout.findViewWithTag(commandId) != null) {
             TextView existingTextView = (TextView) vehicleViewLinearLayout.findViewWithTag(commandId);
             existingTextView.setText(commandResult);
@@ -509,11 +519,11 @@ public class MainActivity extends RoboActivity
             case STOP_LIVE_DATA:
                 stopLiveData();
                 return true;
-            case SETTINGS:
-                updateConfig();
-                return true;
             case TRIPS_LIST:
                 listTrips();
+                return true;
+            case SETTINGS:
+                updateConfig();
                 return true;
         }
         return false;
@@ -602,7 +612,7 @@ public class MainActivity extends RoboActivity
                 public void onClick(DialogInterface dialog, int which) {
                     switch (which) {
                         case DialogInterface.BUTTON_POSITIVE:
-                            ObdGatewayService.saveLogcatToFile(getApplicationContext(), developerEmail);
+                            ObdService.saveLogcatToFile(getApplicationContext(), developerEmail);
                             break;
                         case DialogInterface.BUTTON_NEGATIVE:
                             break;
@@ -674,13 +684,13 @@ public class MainActivity extends RoboActivity
             Log.d(TAG, "Binding the OBD service");
             if (prerequisites) {
                 bluetoothStatusTextView.setText(getString(R.string.status_bluetooth_connecting));
-                Intent serviceIntent = new Intent(this, ObdGatewayService.class);
+                Intent serviceIntent = new Intent(this, ObdService.class);
                 bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
             }
             else {
                 // TODO understand why do we use a mocked service?
                 bluetoothStatusTextView.setText(getString(R.string.status_bluetooth_disabled));
-                Intent serviceIntent = new Intent(this, MockObdGatewayService.class);
+                Intent serviceIntent = new Intent(this, MockObdService.class);
                 bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
             }
         }
