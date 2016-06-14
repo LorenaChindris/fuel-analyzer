@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.AssetFileDescriptor;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -20,6 +21,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -121,6 +123,8 @@ public class MainActivity extends RoboActivity
 
     private static final int KILOMETER = 1000;
     private static final String DECIMAL_FORMAT_PATTERN = "00.00";
+
+    private static final String WAV_EXTENSION = ".wav";
 
     static {
         RoboGuice.setUseAnnotationDatabases(false);
@@ -310,6 +314,9 @@ public class MainActivity extends RoboActivity
                         suffix = "th";
                 }
                 updateTextView(gear, recommendedGear + suffix);
+                if (recommendedGear != 0) {
+                    playSound(recommendedGear);
+                }
 
                 commandResult.clear();
             }
@@ -317,6 +324,20 @@ public class MainActivity extends RoboActivity
             new Handler().postDelayed(queueCommands, ConfigActivity.getObdUpdatePeriod(preferences));
         }
     };
+
+    private void playSound(int index) {
+        MediaPlayer mediaPlayer;
+        try {
+            AssetFileDescriptor afd = getAssets().openFd(index + WAV_EXTENSION);
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Exception thrown while trying to play audio file", e);
+        }
+    }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
 
